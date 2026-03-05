@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flindr — Müşteri aramayı bırak. Müşteri seni bulsun.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #7C3AED;
+      --bg: #0A0A0F;
+      --accent: #A78BFA;
+      --text: #F4F4F5;
+      --text-secondary: #71717A;
+      --success: #10B981;
+      --card-bg: #18181B;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ─── Animated Gradient Mesh Background ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(124,58,237,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(167,139,250,0.05) 0%, transparent 70%);
+      animation: meshMove 18s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes meshMove {
+      0%   { opacity: 1; transform: scale(1) translateY(0px); }
+      100% { opacity: 0.85; transform: scale(1.05) translateY(-20px); }
+    }
+
+    /* ─── Utility ─── */
+    .container { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
+    .pill-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.35);
+      color: var(--accent); font-size: 0.78rem; font-weight: 600;
+      padding: 0.35rem 0.9rem; border-radius: 99px; letter-spacing: 0.02em;
+      animation: pillPulse 3s ease-in-out infinite;
+    }
+    @keyframes pillPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(124,58,237,0); }
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7C3AED, #6D28D9);
+      color: #fff; font-weight: 700; font-size: 0.95rem;
+      padding: 0.75rem 1.6rem; border-radius: 99px; border: none;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover { transform: scale(1.04); box-shadow: 0 6px 28px rgba(124,58,237,0.5); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text); font-weight: 600; font-size: 0.95rem;
+      padding: 0.72rem 1.5rem; border-radius: 99px;
+      border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: all 0.3s ease;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); transform: scale(1.02); }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      backdrop-filter: blur(12px);
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      padding: 1rem 0;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom-color: var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.35rem; font-weight: 900; color: var(--text);
+      letter-spacing: -0.03em; text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-links a {
+      color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 0.5rem 0.8rem; border-radius: 0.5rem;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+    .btn-nav-ghost {
+      color: var(--text-secondary); font-weight: 600; font-size: 0.88rem;
+      padding: 0.5rem 1.1rem; border-radius: 99px;
+      border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+    }
+    .btn-nav-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+    .btn-nav-primary {
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 0.88rem;
+      padding: 0.5rem 1.2rem; border-radius: 99px; border: none;
+      cursor: pointer; text-decoration: none; transition: all 0.2s ease;
+    }
+    .btn-nav-primary:hover { background: #6D28D9; transform: scale(1.03); }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 6rem 0 5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; padding: 4rem 0 3rem; }
+      .hero-visual { display: none; }
+    }
+    .hero-eyebrow { margin-bottom: 1.5rem; }
+    .hero-title {
+      font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 900;
+      line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 1.2rem;
+    }
+    .hero-title .line-highlight { color: var(--accent); }
+    .hero-subtitle {
+      color: var(--text-secondary); font-size: 1.1rem; font-weight: 400;
+      margin-bottom: 2rem; max-width: 440px; line-height: 1.65;
+    }
+    .hero-cta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .stat-item { display: flex; flex-direction: column; }
+    .stat-num { font-size: 1.15rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; }
+    .stat-label { font-size: 0.78rem; color: var(--text-secondary); font-weight: 400; }
+
+    /* ─── Hero Visual / Dashboard Mockup ─── */
+    .hero-visual {
+      position: relative; display: flex; justify-content: center; align-items: center;
+    }
+    .dashboard-mockup {
+      background: rgba(24,24,27,0.9);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.15);
+      width: 340px;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+    .mock-header {
+      font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .match-card {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 0.75rem; padding: 0.85rem 1rem;
+      margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.85rem;
+      transition: all 0.3s ease;
+    }
+    .match-card:hover { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.3); }
+    .avatar {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.85rem; color: #fff;
+    }
+    .match-info { flex: 1; }
+    .match-name { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 0.1rem; }
+    .match-role { font-size: 0.73rem; color: var(--text-secondary); }
+    .score-pill {
+      font-size: 0.78rem; font-weight: 800; color: var(--success);
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);
+      padding: 0.2rem 0.6rem; border-radius: 99px;
+    }
+    .mock-stats-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-top: 1rem;
+    }
+    .mini-stat {
+      background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 0.6rem; padding: 0.65rem 0.8rem;
+    }
+    .mini-stat-val { font-size: 1.1rem; font-weight: 900; color: var(--accent); }
+    .mini-stat-label { font-size: 0.68rem; color: var(--text-secondary); margin-top: 0.1rem; }
+
+    /* ─── SOCIAL PROOF STRIP ─── */
+    .social-strip { padding: 2.5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .strip-label { text-align: center; font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .logos-track { overflow: hidden; }
+    .logos-inner {
+      display: flex; gap: 3rem; align-items: center;
+      animation: logoScroll 28s linear infinite;
+      width: max-content;
+    }
+    .logos-inner:hover { animation-play-state: paused; }
+    @keyframes logoScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .logo-item {
+      font-size: 1.05rem; font-weight: 800; color: rgba(255,255,255,0.2);
+      letter-spacing: -0.02em; white-space: nowrap; flex-shrink: 0;
+      transition: color 0.2s ease;
+    }
+    .logo-item:hover { color: rgba(255,255,255,0.4); }
+
+    /* ─── PROBLEM → SOLUTION ─── */
+    .problem-solution { padding: 6rem 0; }
+    .section-eyebrow {
+      font-size: 0.78rem; font-weight: 700; color: var(--accent); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(1.9rem, 3.5vw, 2.8rem); font-weight: 900;
+      letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--text-secondary); font-size: 1rem; max-width: 480px; }
+
+    .ps-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 3.5rem;
+      border: 1px solid var(--border); border-radius: 1.25rem; overflow: hidden;
+    }
+    @media (max-width: 768px) { .ps-grid { grid-template-columns: 1fr; } }
+    .ps-col { padding: 2.5rem; }
+    .ps-col.problem { border-right: 1px solid var(--border); background: rgba(239,68,68,0.04); }
+    .ps-col.solution { background: rgba(124,58,237,0.06); }
+    .ps-col-title {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 1.5rem;
+    }
+    .ps-col.problem .ps-col-title { color: #F87171; }
+    .ps-col.solution .ps-col-title { color: var(--accent); }
+    .ps-item {
+      display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 1.1rem;
+      font-size: 0.95rem; line-height: 1.5;
+    }
+    .ps-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-it-works { padding: 6rem 0; }
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      padding: 2rem; border-radius: 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease; position: relative;
+    }
+    .step-card:hover { transform: scale(1.02); border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); }
+    .step-num {
+      font-size: 3.5rem; font-weight: 900; color: var(--primary); letter-spacing: -0.05em;
+      line-height: 1; margin-bottom: 1rem; opacity: 0.9;
+    }
+    .step-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+    .step-title { font-size: 1.05rem; font-weight: 800; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+    .step-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+    .step-connector {
+      position: absolute; right: -0.75rem; top: 50%; transform: translateY(-50%);
+      width: 1.5rem; height: 1.5rem; background: var(--primary);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; z-index: 2; color: #fff;
+    }
+    @media (max-width: 768px) { .step-connector { display: none; } }
+
+    /* ─── FEATURES ─── */
+    .features { padding: 6rem 0; }
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 3.5rem; }
+    @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+    .feature-card {
+      padding: 2rem; border-radius: 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      backdrop-filter: blur(12px); transition: all 0.3s ease;
+    }
+    .feature-card:hover { transform: scale(1.02); border-color: rgba(124,58,237,0.25); background: rgba(124,58,237,0.05); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 0.75rem;
+      background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1.1rem;
+    }
+    .feature-title { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .feature-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials { padding: 6rem 0; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3.5rem; }
+    @media (max-width: 768px) { .testimonials-grid { grid-template-columns: 1fr; } }
+    .testimonial-card {
+      padding: 1.75rem; border-radius: 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      backdrop-filter: blur(12px); transition: all 0.3s ease;
+    }
+    .testimonial-card:hover { transform: scale(1.02); border-color: rgba(124,58,237,0.25); }
+    .stars { color: #F59E0B; font-size: 0.85rem; margin-bottom: 1rem; letter-spacing: 0.1em; }
+    .testimonial-text { font-size: 0.95rem; line-height: 1.65; color: var(--text); margin-bottom: 1.25rem; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 0.75rem; }
+    .author-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.85rem; color: #fff;
+    }
+    .author-info .author-name { font-size: 0.88rem; font-weight: 700; }
+    .author-info .author-title { font-size: 0.75rem; color: var(--text-secondary); }
+
+    /* ─── PRICING ─── */
+    .pricing { padding: 6rem 0; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; max-width: 720px; margin: 3.5rem auto 0; }
+    @media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr; } }
+    .pricing-card {
+      padding: 2.25rem; border-radius: 1.25rem;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      backdrop-filter: blur(12px); transition: all 0.3s ease; position: relative;
+    }
+    .pricing-card.featured {
+      border-color: rgba(124,58,237,0.5); background: rgba(124,58,237,0.07);
+      box-shadow: 0 0 40px rgba(124,58,237,0.15);
+    }
+    .pricing-card:hover { transform: scale(1.02); }
+    .recommended-badge {
+      position: absolute; top: -0.6rem; left: 50%; transform: translateX(-50%);
+      background: var(--primary); color: #fff; font-size: 0.72rem; font-weight: 700;
+      padding: 0.25rem 0.85rem; border-radius: 99px; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .pricing-tier { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+    .pricing-price {
+      font-size: 2.8rem; font-weight: 900; letter-spacing: -0.05em; margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+    .pricing-price span { font-size: 1.1rem; font-weight: 500; color: var(--text-secondary); vertical-align: middle; }
+    .pricing-desc { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem; }
+    .pricing-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .pricing-features { list-style: none; margin-bottom: 2rem; }
+    .pricing-features li {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      font-size: 0.88rem; color: var(--text); padding: 0.35rem 0;
+    }
+    .pricing-features li .check { color: var(--success); font-size: 0.85rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .pricing-guarantee {
+      text-align: center; font-size: 0.8rem; color: var(--text-secondary);
+      margin-top: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;
+    }
+
+    /* ─── FINAL CTA ─── */
+    .final-cta {
+      padding: 6rem 0; margin: 0 1.5rem;
+      border-radius: 1.5rem; overflow: hidden;
+      background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 50%, #4C1D95 100%);
+      text-align: center; position: relative;
+    }
+    .final-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(167,139,250,0.2) 0%, transparent 60%);
+    }
+    .final-cta-content { position: relative; z-index: 1; }
+    .final-cta-title {
+      font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900;
+      letter-spacing: -0.04em; margin-bottom: 1rem;
+    }
+    .final-cta-sub { color: rgba(255,255,255,0.75); font-size: 1rem; margin-bottom: 2rem; }
+    .btn-cta-white {
+      background: #fff; color: var(--primary); font-weight: 800; font-size: 1rem;
+      padding: 0.9rem 2rem; border-radius: 99px; border: none;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: all 0.3s ease; box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    .btn-cta-white:hover { transform: scale(1.05); box-shadow: 0 8px 36px rgba(0,0,0,0.35); }
+
+    /* ─── FOOTER ─── */
+    footer { padding: 4rem 0 0; border-top: 1px solid var(--border); margin-top: 5rem; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+    .footer-brand .footer-logo { font-size: 1.2rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 0.75rem; color: var(--text); }
+    .footer-brand .footer-logo span { color: var(--accent); }
+    .footer-brand p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; max-width: 220px; }
+    .footer-col h4 { font-size: 0.78rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+    .footer-col a { display: block; color: var(--text-secondary); text-decoration: none; font-size: 0.88rem; padding: 0.3rem 0; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bar {
+      border-top: 1px solid var(--border); padding: 1.25rem 0;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: gap;
+    }
+    .footer-bar p { font-size: 0.8rem; color: var(--text-secondary); }
+    .footer-legal { display: flex; gap: 1.25rem; }
+    .footer-legal a { font-size: 0.8rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+    .footer-legal a:hover { color: var(--text); }
+
+    /* ─── Section spacing ─── */
+    section { position: relative; z-index: 1; }
+    .py-section { padding: 6rem 0; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ NAVBAR ══════════════════════════════ -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Flin<span>dr</span></a>
+      <div class="nav-links">
+        <a href="#how-it-works">Nasıl Çalışır</a>
+        <a href="#pricing">Fiyatlar</a>
+        <a href="#blog">Blog</a>
+      </div>
+      <div class="nav-actions">
+        <a href="#login" class="btn-nav-ghost">Giriş Yap</a>
+        <a href="#signup" class="btn-nav-primary">Ücretsiz Dene</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════ HERO ══════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="pill-badge">✦ Match Engine v2.0 — Şimdi Canlı</span>
+        </div>
+        <h1 class="hero-title">
+          Müşteri aramayı<br />
+          bırak. <span class="line-highlight">Müşteri seni<br />bulsun.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Flindr, seni doğru müşteriyle saniyeler içinde eşleştirir. Profil yükle, motorumuz işi halleder.
+        </p>
+        <div class="hero-cta">
+          <a href="#signup" class="btn-primary">Ücretsiz Başla →</a>
+          <a href="#how-it-works" class="btn-ghost">Nasıl Çalışır</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">2.400+</span>
+            <span class="stat-label">Aktif freelancer</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">%94</span>
+            <span class="stat-label">Eşleştirme memnuniyeti</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">4 dk</span>
+            <span class="stat-label">Ortalama eşleştirme</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Mockup -->
+      <div class="hero-visual">
+        <div class="dashboard-mockup">
+          <div class="mock-header">🎯 Güncel Eşleşmeler</div>
+
+          <div class="match-card">
+            <div class="avatar" style="background: linear-gradient(135deg, #7C3AED, #A78BFA);">AK</div>
+            <div class="match-info">
+              <div class="match-name">Arıca Kargo A.Ş.</div>
+              <div class="match-role">UI/UX Tasarımcı — 3 ay</div>
+            </div>
+            <div class="score-pill">%97</div>
+          </div>
+
+          <div class="match-card">
+            <div class="avatar" style="background: linear-gradient(135deg, #059669, #10B981);">TK</div>
+            <div class="match-info">
+              <div class="match-name">Teknoloji Lab</div>
+              <div class="match-role">Frontend Dev — 6 ay</div>
+            </div>
+            <div class="score-pill">%91</div>
+          </div>
+
+          <div class="match-card">
+            <div class="avatar" style="background: linear-gradient(135deg, #DC2626, #F87171);">BP</div>
+            <div class="match-info">
+              <div class="match-name">Başkent Proje</div>
+              <div class="match-role">Copywriter — 2 ay</div>
+            </div>
+            <div class="score-pill">%88</div>
+          </div>
+
+          <div class="mock-stats-row">
+            <div class="mini-stat">
+              <div class="mini-stat-val">12</div>
+              <div class="mini-stat-label">Bu hafta eşleşme</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-val">4.1 dk</div>
+              <div class="mini-stat-label">Ort. yanıt süresi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ SOCIAL PROOF STRIP ══════════════════════════ -->
+<section class="social-strip">
+  <div class="container">
+    <p class="strip-label">Bunların ekiplerinde çalışan freelancer'lar Flindr kullanıyor</p>
+    <div class="logos-track">
+      <div class="logos-inner">
+        <!-- 2x for seamless loop -->
+        <span class="logo-item">Koçtaş Dijital</span>
+        <span class="logo-item">Arçelik</span>
+        <span class="logo-item">Getir</span>
+        <span class="logo-item">Trendyol</span>
+        <span class="logo-item">Sahibinden</span>
+        <span class="logo-item">Hepsiburada</span>
+        <span class="logo-item">Logo Yazılım</span>
+        <span class="logo-item">Türk Telekom</span>
+        <span class="logo-item">Vakıfbank</span>
+        <span class="logo-item">Garanti BBVA</span>
+        <span class="logo-item">Koçtaş Dijital</span>
+        <span class="logo-item">Arçelik</span>
+        <span class="logo-item">Getir</span>
+        <span class="logo-item">Trendyol</span>
+        <span class="logo-item">Sahibinden</span>
+        <span class="logo-item">Hepsiburada</span>
+        <span class="logo-item">Logo Yazılım</span>
+        <span class="logo-item">Türk Telekom</span>
+        <span class="logo-item">Vakıfbank</span>
+        <span class="logo-item">Garanti BBVA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PROBLEM → SOLUTION ══════════════════════════ -->
+<section class="problem-solution" id="problem">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:0;">
+      <p class="section-eyebrow">Neden Flindr?</p>
+      <h2 class="section-title">Eski yöntem değişti.<br />Artık daha iyi bir yol var.</h2>
+    </div>
+
+    <div class="ps-grid">
+      <div class="ps-col problem">
+        <div class="ps-col-title">
+          <span>✕</span> Eskiden böyleydi
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">😩</span>
+          <span>Günlerce platform tarıyordun, üst üste aynı ilanları görüyordun.</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">⏳</span>
+          <span>Başvurular haftalar sonra yanıt alıyordu — ya da hiç almıyordu.</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">🎲</span>
+          <span>Yanlış sektör, yanlış bütçe, yanlış zamanlama. Çoğu eşleşme rastgele.</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">📋</span>
+          <span>Her yere aynı jenerik başvuru mektubunu kopyalayıp yapıştırıyordun.</span>
+        </div>
+      </div>
+      <div class="ps-col solution">
+        <div class="ps-col-title">
+          <span>✓</span> Şimdi böyle
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">🤖</span>
+          <span>AI motor profilini analiz eder, sana özel eşleşmeleri saniyeler içinde bulur.</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">⚡</span>
+          <span>Ortalama 4 dakikada ilk eşleşme — beklemek yok, öylece gelir.</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">🎯</span>
+          <span>%94+ doğrulukla skor bazlı eşleştirme. Yanlış fırsatlara sıfır zaman.</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-icon">✉️</span>
+          <span>Otomatik kişiselleştirilmiş intro e-postası — ilk temas artık senin işin değil.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ HOW IT WORKS ══════════════════════════ -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">Nasıl Çalışır?</p>
+      <h2 class="section-title">Üç adım. Sonra kendin yap.</h2>
+      <p class="section-sub" style="margin: 0 auto; text-align:center;">Kurulum 5 dakika, gerisini biz hallederiz.</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card" style="position:relative;">
+        <div class="step-num">01</div>
+        <div class="step-icon">👤</div>
+        <h3 class="step-title">Profilini Oluştur</h3>
+        <p class="step-desc">Uzmanlık alanlarını, sektör tercihlerini ve müsaitlik durumunu belirle. 5 dakika yeter.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step-card" style="position:relative;">
+        <div class="step-num">02</div>
+        <div class="step-icon">🧠</div>
+        <h3 class="step-title">Motor Analiz Eder</h3>
+        <p class="step-desc">Match Engine v2.0, profilini 140+ değişken üzerinden tarar. Bütçe, kültür, zamanlama — hepsi.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🎯</div>
+        <h3 class="step-title">Eşleştirme Gelir</h3>
+        <p class="step-desc">Skor bazlı eşleşmeler doğrudan gelen kutuna düşer. Kabul et ya da geç — başka bir şey gerekmez.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FEATURES ══════════════════════════ -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">Özellikler</p>
+      <h2 class="section-title">Her şey dahil. Fazlası yok.</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-title">AI Match Skoru</h3>
+        <p class="feature-desc">Her eşleştirme için 0-100 arası güven skoru. Neden uyumlu olduğunu, nerede risklerin olduğunu açıkça görürsün.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✉️</div>
+        <h3 class="feature-title">Otomatik Intro E-postası</h3>
+        <p class="feature-desc">İlk temas artık senin işin değil. Motor, profiline özel kişiselleştirilmiş bir intro e-postası hazırlayıp gönderir.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3 class="feature-title">Akıllı Profil Analizi</h3>
+        <p class="feature-desc">Profilindeki güçlü ve zayıf yönleri analiz eder. Hangi alanlarda gelişirsen daha iyi eşleşmeler alacağını söyler.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Performans Dashboard'u</h3>
+        <p class="feature-desc">Kaç eşleşme aldın, kaçı kabul etti, ortalama yanıt süresi ne. Tüm metriklerin tek ekranda, net ve temiz.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TESTIMONIALS ══════════════════════════ -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">Kullanıcı Yorumları</p>
+      <h2 class="section-title">Onlar denedi, biz söylemiyoruz.</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"İki yıldır LinkedIn'de müşteri arayışındaydım. Flindr'a kaydolduğumun üçüncü günü aylık 60k'lık bir proje geldi. Hâlâ şok halindeyim."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #7C3AED, #A78BFA);">SE</div>
+          <div class="author-info">
+            <div class="author-name">Selin Eroğlu</div>
+            <div class="author-title">UI/UX Designer, Freelance</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Match skorunu ilk gördüğümde şüpheyle baktım. Ama %91 skor verilen müşteri gerçekten tam profilime göre çıktı. Algoritma gerçekten işliyor."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #059669, #10B981);">MK</div>
+          <div class="author-info">
+            <div class="author-name">Mert Kaya</div>
+            <div class="author-title">Full Stack Developer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Otomatik intro e-postası özelliği müthiş. Artık soğuk e-posta yazmakla zaman harcamıyorum. Sadece gelen teklifleri değerlendiriyorum."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #DC2626, #F87171);">AY</div>
+          <div class="author-info">
+            <div class="author-name">Ayşe Yıldız</div>
+            <div class="author-title">Content Strategist</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PRICING ══════════════════════════ -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">Fiyatlandırma</p>
+      <h2 class="section-title">Basit. Şeffaf. Değer odaklı.</h2>
+      <p class="section-sub" style="margin: 0.75rem auto 0; text-align:center;">14 gün ücretsiz dene, beğenirsen devam et.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price">₺499 <span>/ ay</span></div>
+        <p class="pricing-desc">Bağımsız çalışanlar için ideal başlangıç.</p>
+        <hr class="pricing-divider" />
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Aylık 20 eşleştirme</li>
+          <li><span class="check">✓</span> AI Match Skoru</li>
+          <li><span class="check">✓</span> Temel profil analizi</li>
+          <li><span class="check">✓</span> E-posta bildirimleri</li>
+          <li><span class="check">✓</span> 7/24 destek</li>
+        </ul>
+        <a href="#signup" class="btn-ghost" style="width:100%; justify-content:center; text-align:center;">Ücretsiz Dene</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card featured">
+        <div class="recommended-badge">✦ Önerilen</div>
+        <div class="pricing-tier">Pro</div>
+        <div class="pricing-price">₺799 <span>/ ay</span></div>
+        <p class="pricing-desc">Daha fazla eşleşme, daha fazla kontrol.</p>
+        <hr class="pricing-divider" />
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Sınırsız eşleştirme</li>
+          <li><span class="check">✓</span> Gelişmiş AI Match Skoru</li>
+          <li><span class="check">✓</span> Otomatik intro e-postası</li>
+          <li><span class="check">✓</span> Performans dashboard'u</li>
+          <li><span class="check">✓</span> Öncelikli destek</li>
+          <li><span class="check">✓</span> API erişimi</li>
+        </ul>
+        <a href="#signup" class="btn-primary" style="width:100%; justify-content:center;">Ücretsiz Dene →</a>
+      </div>
+    </div>
+
+    <p class="pricing-guarantee">Kredi kartı gerekmez. 14 gün ücretsiz dene, istediğin zaman iptal et.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FINAL CTA ══════════════════════════ -->
+<section style="padding: 4rem 0; position:relative; z-index:1;">
+  <div class="final-cta">
+    <div class="final-cta-content container">
+      <h2 class="final-cta-title">Bir sonraki müşterin<br />seni bekliyor.</h2>
+      <p class="final-cta-sub">Şu an 47 şirket sana benzer bir freelancer arıyor.</p>
+      <a href="#signup" class="btn-cta-white">Hemen Başla →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">Flin<span>dr</span></div>
+        <p>Freelancer'ları doğru müşteriyle eşleştiren akıllı platform. Aramayı bırak, bulunmaya başla.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Ürün</h4>
+        <a href="#how-it-works">Nasıl Çalışır</a>
+        <a href="#features">Özellikler</a>
+        <a href="#pricing">Fiyatlar</a>
+        <a href="#">Blog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Şirket</h4>
+        <a href="#">Hakkımızda</a>
+        <a href="#">Kariyer</a>
+        <a href="#">İletişim</a>
+        <a href="#">Basın</a>
+      </div>
+      <div class="footer-col">
+        <h4>Yasal</h4>
+        <a href="#">KVKK</a>
+        <a href="#">Gizlilik Politikası</a>
+        <a href="#">Kullanım Koşulları</a>
+        <a href="#">Çerez Politikası</a>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <p>© 2026 Flindr Teknoloji A.Ş. Tüm hakları saklıdır.</p>
+      <div class="footer-legal">
+        <a href="#">KVKK</a>
+        <a href="#">Gizlilik</a>
+        <a href="#">Koşullar</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════ JS ══════════════════════════ -->
+<script>
+  // Sticky nav blur on scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // Scroll reveal animation
+  const observerOpts = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' };
+  const reveal = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        reveal.unobserve(entry.target);
+      }
+    });
+  }, observerOpts);
+
+  // Apply reveal to cards and sections
+  document.querySelectorAll('.step-card, .feature-card, .testimonial-card, .pricing-card, .ps-col').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(28px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    reveal.observe(el);
+  });
+
+  // Staggered reveal for grids
+  document.querySelectorAll('.steps-grid, .features-grid, .testimonials-grid').forEach(grid => {
+    Array.from(grid.children).forEach((child, i) => {
+      child.style.transitionDelay = `${i * 0.1}s`;
+    });
+  });
+</script>
+
+</body>
+</html>
