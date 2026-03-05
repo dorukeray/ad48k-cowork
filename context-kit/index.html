@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Context Kit — Tame Claude's Context Window</title>
+  <meta name="description"
+    content="A lightweight system for managing Claude's context window in large Cowork folders. Three components, one protocol, zero wasted tokens." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #09090B;
+      --bg-subtle: #111113;
+      --surface: #18181B;
+      --surface-hover: #1F1F23;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-active: rgba(255, 255, 255, 0.12);
+      --text: #FAFAFA;
+      --text-secondary: #A1A1AA;
+      --text-muted: #71717A;
+      --accent: #A78BFA;
+      --accent-dim: rgba(167, 139, 250, 0.15);
+      --purple: #7C3AED;
+      --purple-glow: rgba(124, 58, 237, 0.25);
+      --green: #34D399;
+      --green-dim: rgba(52, 211, 153, 0.12);
+      --amber: #FBBF24;
+      --amber-dim: rgba(251, 191, 36, 0.12);
+      --red: #F87171;
+      --red-dim: rgba(248, 113, 113, 0.10);
+      --blue: #60A5FA;
+      --blue-dim: rgba(96, 165, 250, 0.12);
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', -apple-system, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Background mesh ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 10%, rgba(124, 58, 237, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 85%, rgba(167, 139, 250, 0.08) 0%, transparent 55%);
+      animation: meshDrift 20s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes meshDrift {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0.8;
+        transform: scale(1.04) translateY(-10px);
+      }
+    }
+
+    /* ─── Utilities ─── */
+    .container {
+      max-width: 68rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.9rem 0;
+      background: rgba(9, 9, 11, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 0.7rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-github:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      border-color: var(--border-active);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 6rem 0 5rem;
+      text-align: center;
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      letter-spacing: 0.03em;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(135deg, var(--text) 40%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      max-width: 540px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7C3AED, #6D28D9);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px var(--purple-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px var(--purple-glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.68rem 1.4rem;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--border-active);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* ─── STATS BAR ─── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* ─── PROBLEM SECTION ─── */
+    .problem-section {
+      padding: 5rem 0;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    .problem-visual {
+      margin-top: 3rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.r {
+      background: #EF4444;
+    }
+
+    .terminal-dot.y {
+      background: #F59E0B;
+    }
+
+    .terminal-dot.g {
+      background: #22C55E;
+    }
+
+    .terminal-title {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-left: 0.5rem;
+    }
+
+    .terminal-body {
+      padding: 1.25rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+
+    .terminal-body .line {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .terminal-body .prompt {
+      color: var(--accent);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .terminal-body .output {
+      color: var(--text-muted);
+    }
+
+    .terminal-body .warn {
+      color: var(--amber);
+    }
+
+    .terminal-body .err {
+      color: var(--red);
+    }
+
+    .terminal-body .ok {
+      color: var(--green);
+    }
+
+    .terminal-body .dim {
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .terminal-body .bar-track {
+      display: inline-block;
+      width: 180px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      vertical-align: middle;
+      overflow: hidden;
+      margin: 0 0.35rem;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .bar-fill.danger {
+      background: linear-gradient(90deg, #EF4444, #F87171);
+      width: 92%;
+      animation: barPulse 2s ease-in-out infinite;
+    }
+
+    .bar-fill.good {
+      background: linear-gradient(90deg, #22C55E, #34D399);
+      width: 28%;
+    }
+
+    @keyframes barPulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.6
+      }
+    }
+
+    /* ─── THREE COMPONENTS ─── */
+    .components-section {
+      padding: 5rem 0;
+    }
+
+    .components-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .components-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .component-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem 1.75rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .component-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--purple), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .component-card:hover {
+      border-color: rgba(124, 58, 237, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .component-card:hover::before {
+      opacity: 1;
+    }
+
+    .component-num {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--purple);
+      background: var(--accent-dim);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .component-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .component-desc {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .component-file {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .component-file:hover {
+      background: rgba(167, 139, 250, 0.25);
+    }
+
+    /* ─── TIER MODEL ─── */
+    .tier-section {
+      padding: 5rem 0;
+    }
+
+    .tier-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .tier-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr;
+      gap: 0;
+      align-items: stretch;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .tier-row:hover {
+      border-color: var(--border-active);
+      transform: translateX(4px);
+    }
+
+    @media (max-width: 768px) {
+      .tier-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tier-badge-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      border-right: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .tier-badge-cell {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        justify-content: flex-start;
+      }
+    }
+
+    .tier-badge {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .tier-badge.t1 {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .tier-badge.t2 {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .tier-badge.t3 {
+      background: var(--red-dim);
+      color: var(--red);
+      border: 1px solid rgba(248, 113, 113, 0.15);
+    }
+
+    .tier-what {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .tier-what {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    .tier-what-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .tier-what-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .tier-when {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* ─── HOW THEY WORK TOGETHER ─── */
+    .flow-section {
+      padding: 5rem 0;
+    }
+
+    .flow-pipeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .flow-step {
+      flex: 1;
+      min-width: 200px;
+      max-width: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .flow-step:hover {
+      border-color: rgba(124, 58, 237, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .flow-step-num {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+      letter-spacing: 0.05em;
+    }
+
+    .flow-step-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .flow-step-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      flex-shrink: 0;
+      opacity: 0.4;
+    }
+
+    @media (max-width: 768px) {
+      .flow-pipeline {
+        flex-direction: column;
+      }
+
+      .flow-arrow {
+        transform: rotate(90deg);
+        padding: 0.5rem 0;
+      }
+    }
+
+    /* ─── CODE SNIPPETS ─── */
+    .snippet-section {
+      padding: 5rem 0;
+    }
+
+    .snippets-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .snippets-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .snippet-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .snippet-card:hover {
+      border-color: var(--border-active);
+    }
+
+    .snippet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .snippet-filename {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .snippet-filename .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .snippet-filename .dot.green {
+      background: var(--green);
+    }
+
+    .snippet-filename .dot.purple {
+      background: var(--accent);
+    }
+
+    .snippet-badge {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .snippet-badge.settings {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .snippet-badge.folder {
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .snippet-body {
+      padding: 1.1rem 1.25rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+      overflow-x: auto;
+    }
+
+    .snippet-body .comment {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .snippet-body .key {
+      color: var(--accent);
+    }
+
+    .snippet-body .val {
+      color: var(--green);
+    }
+
+    .snippet-body .heading {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* ─── ROLLOUT ─── */
+    .rollout-section {
+      padding: 5rem 0;
+    }
+
+    .rollout-steps {
+      margin-top: 3rem;
+      max-width: 600px;
+    }
+
+    .rollout-step {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      padding: 1.5rem 0;
+      position: relative;
+    }
+
+    .rollout-step+.rollout-step {
+      border-top: 1px solid var(--border);
+    }
+
+    .rollout-marker {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .rollout-marker.now {
+      background: var(--green-dim);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .rollout-marker.next {
+      background: var(--blue-dim);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .rollout-marker.later {
+      background: var(--accent-dim);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+    }
+
+    .rollout-content {}
+
+    .rollout-timing {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+
+    .rollout-timing.now {
+      color: var(--green);
+    }
+
+    .rollout-timing.next {
+      color: var(--blue);
+    }
+
+    .rollout-timing.later {
+      color: var(--accent);
+    }
+
+    .rollout-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .rollout-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      padding: 4rem 0 5rem;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(167, 139, 250, 0.06) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 1.25rem;
+      padding: 3.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 70% at 50% 0%, rgba(124, 58, 237, 0.15) 0%, transparent 60%);
+    }
+
+    .cta-box>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: var(--text);
+    }
+
+    /* ─── Scroll Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 {
+      transition-delay: 0.1s;
+    }
+
+    .reveal-delay-2 {
+      transition-delay: 0.2s;
+    }
+
+    .reveal-delay-3 {
+      transition-delay: 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ───────── NAV ───────── -->
+  <nav>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-brand">
+          <div class="nav-brand-icon">C</div>
+          Context Kit
+        </a>
+        <div class="nav-links">
+          <a href="#problem">Problem</a>
+          <a href="#components">Components</a>
+          <a href="#tiers">Tier Model</a>
+          <a href="#setup">Setup</a>
+        </div>
+        <a href="http://github.com/dorukeray/ad48k-cowork" class="nav-github" target="_blank">
+          ★ GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ───────── HERO ───────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-label">⬡ COWORK PERSONALIZATION</div>
+      <h1>Tame Claude's<br />Context Window</h1>
+      <p>A lightweight system that makes Claude read the right files, in the right order, and ignore the rest. Three
+        components, one protocol, zero wasted tokens.</p>
+      <div class="hero-actions">
+        <a href="#setup" class="btn-primary">Get Started →</a>
+        <a href="#problem" class="btn-outline">See the Problem</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── STATS ───────── -->
+  <section class="stats-bar">
+    <div class="stat">
+      <div class="stat-val">3</div>
+      <div class="stat-label">Components</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">3</div>
+      <div class="stat-label">Tiers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">5 min</div>
+      <div class="stat-label">Setup Time</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">0</div>
+      <div class="stat-label">Dependencies</div>
+    </div>
+  </section>
+
+  <!-- ───────── THE PROBLEM ───────── -->
+  <section class="problem-section" id="problem">
+    <div class="container">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title reveal">Claude reads everything.<br />Then runs out of room.</h2>
+      <p class="section-desc reveal reveal-delay-1">When you point Claude at a folder with dozens of files, it tries to
+        read them all. It burns through its context window on irrelevant content, then has no room left for actual work.
+        Output quality drops. Sessions stall.</p>
+
+      <div class="problem-visual reveal reveal-delay-2">
+        <div class="terminal-bar">
+          <div class="terminal-dot r"></div>
+          <div class="terminal-dot y"></div>
+          <div class="terminal-dot g"></div>
+          <span class="terminal-title">claude — cowork session</span>
+        </div>
+        <div class="terminal-body">
+          <div class="line"><span class="prompt">→</span> <span>Reading project folder… <span class="dim">(147
+                files)</span></span></div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">├──
+              archive/quarterly-report-2023.docx</span></div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">├──
+              drafts/old-brand-guide-v1.pdf</span></div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">├──
+              drafts/old-brand-guide-v2.pdf</span></div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">├── meeting-notes-jan-14.md</span>
+          </div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="dim">… 142 more files</span></div>
+          <div class="line" style="margin-top:0.5rem"><span class="prompt">⚠</span> <span class="warn">Context usage:
+              <span class="bar-track"><span class="bar-fill danger"></span></span> 92%</span></div>
+          <div class="line"><span class="prompt">✕</span> <span class="err">Insufficient context for task. Output
+              truncated.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── THE FIX — THREE COMPONENTS ───────── -->
+  <section class="components-section" id="components">
+    <div class="container">
+      <div class="section-label">The Fix</div>
+      <h2 class="section-title reveal">Three components.<br />One protocol.</h2>
+      <p class="section-desc reveal reveal-delay-1">Each works on its own, but they're designed to work together. Start
+        with one, add the rest when you're ready.</p>
+
+      <div class="components-grid">
+        <div class="component-card reveal reveal-delay-1">
+          <div class="component-num">1</div>
+          <h3 class="component-title">Global Instructions</h3>
+          <p class="component-desc">Persistent rules you paste into Cowork's global settings. They tell Claude to apply
+            the tiered access model to every folder — read canonical docs first, load domain files only when tasks need
+            them, ignore archival content.</p>
+          <a href="global-instructions.md" class="component-file">
+            <span>📄</span> global-instructions.md
+          </a>
+        </div>
+
+        <div class="component-card reveal reveal-delay-2">
+          <div class="component-num">2</div>
+          <h3 class="component-title">Folder Manifests</h3>
+          <p class="component-desc">A <code>_MANIFEST.md</code> file you drop into any working folder. It tells Claude
+            which documents are source-of-truth, which subfolders map to which domains, and what to skip entirely.</p>
+          <a href="manifest-template.md" class="component-file">
+            <span>📄</span> manifest-template.md
+          </a>
+        </div>
+
+        <div class="component-card reveal reveal-delay-3">
+          <div class="component-num">3</div>
+          <h3 class="component-title">Navigator Skill</h3>
+          <p class="component-desc">A Cowork skill that enforces the orientation protocol — read manifest, load Tier 1,
+            assess relevance, load Tier 2 selectively. Handles conflict resolution and scopes sub-agents automatically.
+          </p>
+          <a href="tiered-context-navigator/SKILL.md" class="component-file">
+            <span>📄</span> SKILL.md
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── TIER MODEL ───────── -->
+  <section class="tier-section" id="tiers">
+    <div class="container">
+      <div class="section-label">The Tier Model</div>
+      <h2 class="section-title reveal">Not all files are<br />created equal.</h2>
+      <p class="section-desc reveal reveal-delay-1">The system classifies every file in a folder into one of three
+        tiers. Claude reads them in order of priority — most important first, irrelevant never.</p>
+
+      <div class="tier-grid">
+        <div class="tier-row reveal reveal-delay-1">
+          <div class="tier-badge-cell">
+            <span class="tier-badge t1">TIER 1 — CANONICAL</span>
+          </div>
+          <div class="tier-what">
+            <div class="tier-what-title">Source-of-truth documents</div>
+            <div class="tier-what-desc">Manifests, master references, approved final versions. The ground truth for the
+              folder.</div>
+          </div>
+          <div class="tier-when">Always loaded first, before any work begins. Takes precedence over all other files if
+            information conflicts.</div>
+        </div>
+
+        <div class="tier-row reveal reveal-delay-2">
+          <div class="tier-badge-cell">
+            <span class="tier-badge t2">TIER 2 — DOMAIN</span>
+          </div>
+          <div class="tier-what">
+            <div class="tier-what-title">Working files in domain subfolders</div>
+            <div class="tier-what-desc">Brand docs, pricing models, engineering specs — read only when the task touches
+              that domain.</div>
+          </div>
+          <div class="tier-when">Loaded selectively, only when the current task requires files from that specific
+            domain.</div>
+        </div>
+
+        <div class="tier-row reveal reveal-delay-3">
+          <div class="tier-badge-cell">
+            <span class="tier-badge t3">TIER 3 — ARCHIVAL</span>
+          </div>
+          <div class="tier-what">
+            <div class="tier-what-title">Old versions, drafts, superseded files</div>
+            <div class="tier-what-desc">Files in <code>archive/</code>, <code>old/</code>, <code>drafts/</code>, or
+              anything dated older than 6 months.</div>
+          </div>
+          <div class="tier-when">Never loaded unless you explicitly ask Claude to read them. Completely ignored by
+            default.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── HOW THEY WORK TOGETHER ───────── -->
+  <section class="flow-section" id="flow">
+    <div class="container">
+      <div class="section-label">Protocol</div>
+      <h2 class="section-title reveal" style="text-align:center;">How they work together</h2>
+      <p class="section-desc reveal reveal-delay-1" style="text-align:center; margin: 0.75rem auto 0;">Each component
+        handles a different layer. Together, they keep Claude focused and efficient.</p>
+
+      <div class="flow-pipeline reveal reveal-delay-2">
+        <div class="flow-step">
+          <div class="flow-step-num">01</div>
+          <h3 class="flow-step-title">Global Rules</h3>
+          <p class="flow-step-desc">Set tiered access, formatting, and preferences across every session</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">02</div>
+          <h3 class="flow-step-title">Folder Manifest</h3>
+          <p class="flow-step-desc">Tell Claude exactly which files matter and why — per folder</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">03</div>
+          <h3 class="flow-step-title">Skill Enforces</h3>
+          <p class="flow-step-desc">The skill enforces the protocol consistently, even in complex tasks</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color: rgba(52,211,153,0.2); background: rgba(52,211,153,0.04);">
+          <div class="flow-step-num" style="color: var(--green);">✓</div>
+          <h3 class="flow-step-title">Focused Output</h3>
+          <p class="flow-step-desc">Context spent on files that matter — not on reading everything</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── CODE SNIPPETS ───────── -->
+  <section class="snippet-section" id="snippets">
+    <div class="container">
+      <div class="section-label">What It Looks Like</div>
+      <h2 class="section-title reveal">Drop-in files.<br />Instant effect.</h2>
+
+      <div class="snippets-grid">
+        <div class="snippet-card reveal reveal-delay-1">
+          <div class="snippet-header">
+            <span class="snippet-filename"><span class="dot green"></span> global-instructions.md</span>
+            <span class="snippet-badge settings">SETTINGS</span>
+          </div>
+          <div class="snippet-body">
+            <div><span class="heading">## Context Management — Tiered File Access</span></div>
+            <div>&nbsp;</div>
+            <div><span class="comment">### Tier 1 — Canonical (Always Read First)</span></div>
+            <div>Before doing any work, scan the folder for</div>
+            <div>a <span class="key">`_MANIFEST.md`</span> file or a <span class="key">`_canonical/`</span></div>
+            <div>subfolder. Read these first to orient.</div>
+            <div>&nbsp;</div>
+            <div><span class="comment">### Tier 2 — Domain-Relevant</span></div>
+            <div>Only read files in subfolders that are</div>
+            <div><span class="val">directly relevant</span> to the current task.</div>
+            <div>&nbsp;</div>
+            <div><span class="comment">### Tier 3 — Archival</span></div>
+            <div>Do <span class="err">not</span> read unless explicitly asked.</div>
+          </div>
+        </div>
+
+        <div class="snippet-card reveal reveal-delay-2">
+          <div class="snippet-header">
+            <span class="snippet-filename"><span class="dot purple"></span> _MANIFEST.md</span>
+            <span class="snippet-badge folder">FOLDER</span>
+          </div>
+          <div class="snippet-body">
+            <div><span class="heading">## Canonical Documents (Tier 1)</span></div>
+            <div>&nbsp;</div>
+            <div>| Document | Covers |</div>
+            <div>|----------|--------|</div>
+            <div>| <span class="key">brand-guide-v3.docx</span> | <span class="val">Brand identity</span> |</div>
+            <div>| <span class="key">pricing-model.xlsx</span> | <span class="val">Current pricing</span> |</div>
+            <div>&nbsp;</div>
+            <div><span class="heading">## Domain References (Tier 2)</span></div>
+            <div>| <span class="key">pricing/</span> | Read for pricing tasks |</div>
+            <div>| <span class="key">brand/</span> | Read for content tasks |</div>
+            <div>&nbsp;</div>
+            <div><span class="heading">## Archival (Tier 3 — Ignore)</span></div>
+            <div>| <span class="err">old/</span> | Superseded by above |</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── ROLLOUT ───────── -->
+  <section class="rollout-section" id="setup">
+    <div class="container">
+      <div class="section-label">Getting Started</div>
+      <h2 class="section-title reveal">Start small.<br />Add layers as needed.</h2>
+      <p class="section-desc reveal reveal-delay-1">You don't need everything at once. Each step independently improves
+        Claude's behavior.</p>
+
+      <div class="rollout-steps">
+        <div class="rollout-step reveal reveal-delay-1">
+          <div class="rollout-marker now">🟢</div>
+          <div class="rollout-content">
+            <div class="rollout-timing now">Start Here</div>
+            <div class="rollout-title">Paste the Global Instructions</div>
+            <div class="rollout-desc">Claude Desktop → Settings → Cowork → Edit Global Instructions → paste
+              <code>global-instructions.md</code>. This alone changes Claude's behavior — it stops reading everything
+              and orients from folder structure first.</div>
+          </div>
+        </div>
+
+        <div class="rollout-step reveal reveal-delay-2">
+          <div class="rollout-marker next">🔵</div>
+          <div class="rollout-content">
+            <div class="rollout-timing next">Next</div>
+            <div class="rollout-title">Add a Manifest to Your Busiest Folder</div>
+            <div class="rollout-desc">Copy <code>manifest-template.md</code> into any folder, rename to
+              <code>_MANIFEST.md</code>, fill it in. See if output quality improves. If it does, add manifests to other
+              folders.</div>
+          </div>
+        </div>
+
+        <div class="rollout-step reveal reveal-delay-3">
+          <div class="rollout-marker later">🟣</div>
+          <div class="rollout-content">
+            <div class="rollout-timing later">Later</div>
+            <div class="rollout-title">Install the Navigator Skill</div>
+            <div class="rollout-desc">Zip the <code>tiered-context-navigator/</code> folder, upload as a Cowork skill.
+              This gives you consistent enforcement, especially for complex tasks with sub-agents.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── AFTER STATE ───────── -->
+  <section style="padding: 3rem 0 5rem;">
+    <div class="container">
+      <div class="problem-visual reveal">
+        <div class="terminal-bar">
+          <div class="terminal-dot r"></div>
+          <div class="terminal-dot y"></div>
+          <div class="terminal-dot g"></div>
+          <span class="terminal-title">claude — cowork session (with context kit)</span>
+        </div>
+        <div class="terminal-body">
+          <div class="line"><span class="prompt">→</span> <span>Reading project folder… <span class="dim">(147
+                files)</span></span></div>
+          <div class="line"><span class="prompt">→</span> <span class="ok">Found _MANIFEST.md — orienting from
+              manifest</span></div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">├── <span class="ok">Tier 1:</span>
+              brand-guide-v3.docx, pricing-model.xlsx <span class="dim">(2 files)</span></span></div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">├── <span
+                style="color:var(--blue)">Tier 2:</span> brand/ <span class="dim">(task-relevant → loaded)</span></span>
+          </div>
+          <div class="line"><span class="prompt">&nbsp;</span> <span class="output">└── <span class="dim">Tier 3:
+                archive/, old/ — skipped</span></span></div>
+          <div class="line" style="margin-top:0.5rem"><span class="prompt">✓</span> <span class="ok">Context usage:
+              <span class="bar-track"><span class="bar-fill good"></span></span> 28%</span></div>
+          <div class="line"><span class="prompt">✓</span> <span class="ok">Ready. Working with 6 relevant files.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── CTA ───────── -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box reveal">
+        <h2 class="cta-title">Stop burning context<br />on files that don't matter.</h2>
+        <p class="cta-desc">Five minutes of setup. Permanently better output.</p>
+        <div class="cta-actions">
+          <a href="global-instructions.md" class="btn-primary">Get Global Instructions →</a>
+          <a href="manifest-template.md" class="btn-outline">View Manifest Template</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── FOOTER ───────── -->
+  <footer>
+    <div class="container">
+      <p>Context Kit — MIT License. Part of the <a href="../">AD48K Cowork Workshop</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Scroll Reveal ───
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // ─── Smooth nav ───
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
+
+</body>
+
+</html>
