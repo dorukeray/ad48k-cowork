@@ -1,0 +1,257 @@
+════════════════════════════════════════════════════════════════════════════════
+FLİNDR — MARKA PROFİLİ & KİMLİK BELGESİ
+Versiyon 1.0  |  Mart 2026  |  Dahili Kullanım
+════════════════════════════════════════════════════════════════════════════════
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. GENEL BAKIŞ — FLINDR NE YAPAR?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Flindr, Türkiye'deki bağımsız profesyoneller (freelancerlar) ile işletmeleri
+yapay zeka destekli bir eşleştirme motoru aracılığıyla buluşturan dijital iş
+platformudur.
+
+Temel varlık nedeni:
+  → Küresel platformlar Türkiye'ye gerçek anlamda hizmet veremiyor
+    (PayPal yasağı, Türkçe destek yok, yüksek komisyon, vergi uyumsuzluğu).
+  → Yerel rakip Bionluk ise %20 komisyon ve küresel erişim eksikliğiyle
+    sınırlı kalıyor.
+  → Flindr bu boşluğu doldurur: Türkiye'ye özel + global erişimli platform.
+
+Ürün versiyonu: Match Engine v2.0 (Nisan 2026 lansmanı)
+Web: flindr.io
+İletişim: hello@flindr.io | kvkk@flindr.io | basin@flindr.io
+Şirket: Flindr Teknoloji A.Ş.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. TEMEL ÜRÜ ÖZELLİKLERİ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ Match Engine v2.0 ]
+  • Freelancer profili, proje brief'i ve geçmiş eşleşme verisini analiz eder.
+  • Ortalama 4 dakikada kişiselleştirilmiş iş–yetenek eşleştirmesi üretir.
+  • Her eşleşmeye 0–100 arası "Uyum Skoru" atar.
+  • Skoru oluşturan faktörleri şeffaf biçimde gösterir:
+    beceri uyumu / bütçe yakınlığı / müsaitlik / geçmiş başarı oranı.
+  • İşletmeler serbest metin brief girebilir; AI kategori, bütçe ve süre
+    parametrelerini otomatik çıkarır.
+
+[ Türkiye'ye Özel Altyapı ]
+  • TL + USD/EUR ikili fiyatlandırma desteği.
+  • IBAN ve yerel ödeme entegrasyonu (Papara, banka havalesi).
+  • Türk e-fatura ve SMM sistemiyle uyumlu vergi altyapısı.
+  • KVKK (6698 sayılı kanun) Madde 5 ve 6 uyumlu veri işleme.
+
+[ Kullanıcı Özellikleri — Freelancer ]
+  • 3 katmanlı beceri ağacı: Ana kategori → Alt kategori → Araç/Teknoloji.
+  • Müsaitlik modu: Açık / Yoğun / Kapalı (tek dokunuş).
+  • Uyum Skoru breakdown: "Profil eksik" uyarıları + güçlendirme önerileri.
+  • Teklif kabul / ret / sonra bak + ret sebebi geri bildirimi.
+  • Piyasa bütçe karşılaştırması (aynı kategorideki anonim veriler).
+
+[ Kullanıcı Özellikleri — İşletme ]
+  • Brief girişi → AI parse → eşleşme listesi (skor + müsaitlik + özet).
+  • Shortlist: Maks. 10 profil + özel not + paylaşım linki (salt okunur).
+  • Match Engine üzerinden ilk mesaj gönderme.
+  • Tercih listesi: Sık çalışılan freelancerları öncelikli gösterme.
+
+[ Platform Güvencesi ]
+  • 3 seviyeli kalite bayraklama: Sarı / Turuncu / Kırmızı.
+  • İtiraz mekanizması (1 itiraz hakkı, 48 saat bildirim).
+  • Admin dashboard: Eşleşme ağırlık parametreleri, performans metrikleri.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. HEDEF KİTLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ Birincil: Freelancerlar ]
+  • Türkiye'de bağımsız çalışan yazılım geliştiriciler, tasarımcılar,
+    dijital pazarlamacılar, içerik üreticileri ve danışmanlar.
+  • Deneyim aralığı: Yeni başlayanlardan kıdemli profesyonellere kadar.
+  • Yurt dışındaki Türk diasporası (özellikle Almanya, Hollanda, Körfez).
+
+[ İkincil: İşletmeler ]
+  • Türkiye'deki KOBİ'ler, startup'lar ve orta ölçekli şirketler.
+  • Freelance ihtiyacı olan pazarlama, operasyon ve ürün ekipleri.
+  • Türkiye'den yetenek almak isteyen global şirketler.
+
+[ Hedef Pazar ]
+  • Türkiye'deki serbest çalışan profesyonel sayısı 2025: ~1,2 milyon+
+  • Türkiye freelance ekonomisi 2026 beklentisi: ~4,5 milyar TL
+  • Platform mevcut kullanıcı tabanı: 2.400 (v2.0 lansmanı itibariyle)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. RAKIPLERDEN FARKLILAŞMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Upwork     → Türkiye'de ödeme sorunu, %0–15 değişken komisyon, Türkçe yok.
+  Contra     → Sadece ABD/Avrupa, Türkiye'ye erişim yok.
+  Bonsai     → Pazar yeri değil, sadece yönetim aracı. Müşteri bulamazsın.
+  Toptal     → %97 red oranı, KOBİ erişemez, gizli markup.
+  Bionluk    → Yerel ama %20 komisyon, global erişim yok, eski teknoloji.
+
+  Flindr'ın kazandığı alanlar:
+  ✓ Türkiye'ye özel + global erişim kombinasyonu (tek platform).
+  ✓ Şeffaf ve düşük komisyon.
+  ✓ Yerli ödeme altyapısı + KVKK uyumlu veri işleme.
+  ✓ AI eşleştirme (4 dk ortalama) vs. manuel arama saatleri.
+  ✓ Modern, mobil uyumlu teknoloji altyapısı.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. MARKA KARAKTERİ VE KİŞİLİĞİ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Flindr'ın kişiliği beş sıfatla özetlenir:
+
+  1. AKILLI      — Karmaşık eşleştirme sorununu şık, sade bir deneyime çevirir.
+                   Teknik derinliği kullanıcıya yüklemiyor; arka planda halleder.
+
+  2. DÜRÜST      — Komisyon şeffaf, skor açıklamalı, hesap askıya alma öncesi
+                   uyarılı. "Sürpriz" yok. Kullanıcıya saygı duyar.
+
+  3. YEREL       — Türkiye'yi gerçekten anlıyor. TL, IBAN, e-fatura, KVKK —
+                   bunlar ek özellik değil, çekirdeğin parçası.
+
+  4. İDDİALI     — "Türkiye'nin global sahneye açılan köprüsü" olmayı hedefler.
+                   Küçük düşünmüyor; Türk yeteneğin dünya çapında tanınmasını
+                   misyon olarak benimsiyor.
+
+  5. İNSANI      — Bot destek değil, gerçek insan çözüm merkezi.
+                   Hata yapar, kabul eder, düzeltir. Kuru kurumsal değil;
+                   sıcak ama profesyonel.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. MARKA SESİ VE TON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ Genel Ton Prensibi ]
+  Güvenilir bir iş arkadaşı gibi konuş — ne patron, ne asistan.
+  Sade Türkçe. Jargon yok. Rakam ve somut fayda öne.
+
+[ Platforma Göre Ton ]
+
+  LinkedIn:
+    → Düşünce liderliği. Türkiye freelance ekosistemi, AI, çalışma geleceği.
+    → Uzun form, içgörü odaklı. Kişisel deneyim ve veri bir arada.
+    → Örnek başlık: "Türkiye'deki freelancerlar hâlâ neden kayıp?"
+
+  Instagram:
+    → Görsel öncelikli, kısa metin. Gerçek kullanıcı hikayeleri.
+    → Carousel + Reel. İnsancıl, sıcak.
+    → Örnek başlık: "4 dakika. 1 eşleşme. Gerçek bir hikaye. 👇"
+
+  E-posta (kullanıcıya):
+    → Kişisel hitap zorunlu. "Sen" dili. Bir CTA per e-posta.
+    → Merak uyandır VEYA fayda göster VEYA FOMO yarat — üçünü birden değil.
+
+  E-posta (satış/cold):
+    → Kısa. Sorgulatıcı. İlk e-posta merak açar, ikincisi kanıt sunar,
+      üçüncüsü son şansı verir ve kapıyı açık bırakır.
+
+[ Kullanılmayacak İfadeler ]
+  ✗ "Devrim niteliğinde"
+  ✗ "Benzersiz"
+  ✗ "Sizi ailemizin bir parçası olarak görüyoruz"
+  ✗ Aşırı ünlem işareti (!!!!)
+  ✗ İngilizce buzzword karışımı ("synergy", "disrupt", "leverage")
+
+[ Tercih Edilen İfadeler ]
+  ✓ Rakamlar: "4 dakika", "%60 azalma", "3 proje / 1 hafta"
+  ✓ Somut fayda: "Profilin artık seni buluyor"
+  ✓ Dürüst soru: "Kaç saatin gitti bu ay iş ararken?"
+  ✓ Türkiye gerçeği: "IBAN", "TL", "Bionluk'tan farkımız şu:"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. GÖRSEL KİMLİK (ÖZET)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Ana Renk Paleti:
+    #1F3864  — Koyu lacivert    (güven, derinlik, kurumsal)
+    #2E75B6  — Orta mavi        (teknoloji, netlik)
+    #BDD7EE  — Açık mavi        (erişilebilirlik, hava)
+    #FFD966  — Altın sarısı     (vurgu, başarı, CTA)
+    #C00000  — Kırmızı          (aciliyet, uyarı, FOMO)
+    #375623  — Koyu yeşil       (büyüme, başarı, onay)
+
+  Yazı Tipi: Calibri (belgeler), sistem sans-serif (platform UI)
+
+  Görsel Ton:
+    → Minimal. Beyaz alan cömert. Metin yoğunluğu düşük.
+    → İkon yerine rakam. Veri görselleştirmesi sade.
+    → Fotoğrafta: gerçek çalışma ortamları, stok fotoğraf değil.
+    → Animasyonda: akıcı, hızlı geçişler (match skoru sayaç animasyonu gibi).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. TEMEL MESAJLAR (MESSAGING PILLARS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Pillar 1 — ZAMAN  "Arama değil, eşleşme."
+    Destekleyici mesaj: Ortalama 4 dakikada eşleşme. Saatlerinizi geri alın.
+
+  Pillar 2 — GÜVEN  "Her eşleşmenin arkasında bir neden var."
+    Destekleyici mesaj: Uyum Skoru şeffaftır. Neden eşleştiğini görürsün.
+
+  Pillar 3 — YERELLIK  "Türkiye'yi anlayan tek platform."
+    Destekleyici mesaj: TL, IBAN, KVKK, Türkçe. Başka bir şeye ihtiyacın yok.
+
+  Pillar 4 — BÜYÜME  "Türkiye'nin yeteneği artık dünyaya açılıyor."
+    Destekleyici mesaj: Yerel kalma. Global ol. Flindr köprü kurar.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. TEMEL METRİKLER VE SOSYAL KANIT (v2.0 Lansmanı İtibariyle)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Kullanıcı sayısı          : 2.400+ (v2.0 lansmanında)
+  Ortalama eşleşme süresi   : 4 dakika
+  Freelancer iş bulma süresi: Beta'da %60 azalma
+  İşletme ilk hafta projesi : Ortalama 3 proje kapatıldı
+  Tekrar kullanım oranı     : %87
+  12 ay hedef MRR           : ₺6.3 milyon
+  12 ay hedef ARR           : ₺75.6 milyon
+  12 ay hedef kullanıcı     : 11.770+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. MEVCUT BELGELER VE ÇIKTILAR (Bu Oturumda Üretildi)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Rekabet Analizi Excel      → Flindr_Platform_Karsilastirma.xlsx
+  User Stories (22 hikaye)   → Flindr_Match_Engine_v2_User_Stories.md
+  Sprint Planı (4 sprint)    → Flindr_Match_Engine_v2_Sprint_Plani.xlsx
+  KVKK Gizlilik Politikası   → Flindr_KVKK_Gizlilik_Politikasi_v2.1.docx
+  İçerik Takvimi (41 post)   → Flindr_Match_Engine_Icerik_Takvimi.xlsx
+  Waitlist E-postaları (3)   → Flindr_Waitlist_Emails_v2.0.docx
+  Cold Email Sekansı (3 aşama)→ Flindr_Cold_Email_Sekans.docx
+  Basın Bülteni              → Flindr_Basin_Bulteni_v2.0.docx
+  Finansal Projeksiyon 12 Ay → Flindr_Finansal_Projeksiyon_12Ay.xlsx
+  Marka Profili (bu dosya)   → Flindr_Marka_Profili.txt
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. GELECEK PLAN (YOL HARİTASI ÖZETİ)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Q2 2026:  Match Engine v2.0 lansman → 500+ yeni kullanıcı hedefi
+  Q2 2026:  Uluslararası genişleme hazırlığı (DE, NL, Körfez)
+  Q3 2026:  v3.0 geliştirme başlangıcı
+              → AI profil güçlendirme önerileri (US-F08)
+              → Kişiselleştirilmiş eşleşme (geçmiş proje verisi) (US-B07)
+              → Çoklu ön teklif (pitch) karşılaştırması (US-B08)
+              → Dinamik demand sinyali ile self-tuning algoritma (US-A05)
+  Q4 2026:  Break-even'dan sonra büyüme yatırımı
+
+
+════════════════════════════════════════════════════════════════════════════════
+Bu belge Flindr'ın yapay zeka sistemleri, içerik üretimi ve ekip onboarding
+süreçlerinde referans kaynak olarak kullanılmak üzere hazırlanmıştır.
+Son güncelleme: Mart 2026  |  flindr.io
+════════════════════════════════════════════════════════════════════════════════
