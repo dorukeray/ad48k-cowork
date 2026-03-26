@@ -2,7 +2,8 @@
   "name": "comparison-report",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch index.ts"
+    "dev": "bun run --watch index.ts",
+    "tunnel": "bunx localtunnel --port 5500"
   },
   "devDependencies": {
     "@types/bun": "latest"

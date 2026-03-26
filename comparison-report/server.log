@@ -1,0 +1,10 @@
+$ bun run --watch index.ts
+1 | const server = Bun.serve({
+                       ^
+error: Failed to start server. Is port 5500 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at /home/doruk/Documents/GitHub/ad48k-cowork/comparison-report/index.ts:1:20
+      at loadAndEvaluateModule (2:1)
