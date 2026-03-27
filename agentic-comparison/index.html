@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent Intelligence — Comparative Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070810;
+    --bg2: #0c0e1a;
+    --bg3: #111428;
+    --border: #1d2040;
+    --border-bright: #2a2f5a;
+    --text: #c8cfe8;
+    --text-dim: #6b7490;
+    --text-bright: #eef0ff;
+
+    --cowork: #22c55e;
+    --cowork-dim: #16a34a22;
+    --cowork-glow: #22c55e44;
+    --code: #38bdf8;
+    --code-dim: #0ea5e922;
+    --code-glow: #38bdf844;
+    --codex: #a78bfa;
+    --codex-dim: #8b5cf622;
+    --codex-glow: #a78bfa44;
+    --claw: #fb923c;
+    --claw-dim: #f9731622;
+    --claw-glow: #fb923c44;
+
+    --gold: #f59e0b;
+    --red: #f87171;
+    --mono: 'Space Mono', monospace;
+    --head: 'Sora', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: rgba(7,8,16,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 58px;
+  }
+  .nav-logo {
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 5px 12px; border: 1px solid transparent;
+    border-radius: 4px; letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text-bright); border-color: var(--border-bright); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 60px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.3;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+  .hero-orb {
+    position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+  }
+  .orb1 { width: 500px; height: 500px; background: var(--code-glow); top: -100px; left: -100px; opacity: 0.5; }
+  .orb2 { width: 400px; height: 400px; background: var(--claw-glow); bottom: -80px; right: 100px; opacity: 0.4; }
+  .orb3 { width: 300px; height: 300px; background: var(--codex-glow); top: 40%; right: -60px; opacity: 0.3; }
+
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 24px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-title {
+    font-family: var(--head); font-size: clamp(42px, 6vw, 84px);
+    font-weight: 800; line-height: 1.05;
+    color: var(--text-bright); margin-bottom: 28px;
+    max-width: 820px;
+    opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-title em { font-style: normal; color: var(--code); }
+  .hero-sub {
+    font-size: 17px; color: var(--text-dim); max-width: 600px;
+    line-height: 1.7; margin-bottom: 56px;
+    opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .tool-pills {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .tool-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 18px; border-radius: 100px;
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    border: 1px solid; letter-spacing: 0.05em; cursor: pointer;
+    transition: all 0.25s; text-decoration: none;
+  }
+  .pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .pill-cowork { color: var(--cowork); border-color: var(--cowork); background: var(--cowork-dim); }
+  .pill-cowork:hover { background: var(--cowork); color: #000; }
+  .pill-code { color: var(--code); border-color: var(--code); background: var(--code-dim); }
+  .pill-code:hover { background: var(--code); color: #000; }
+  .pill-codex { color: var(--codex); border-color: var(--codex); background: var(--codex-dim); }
+  .pill-codex:hover { background: var(--codex); color: #000; }
+  .pill-claw { color: var(--claw); border-color: var(--claw); background: var(--claw-dim); }
+  .pill-claw:hover { background: var(--claw); color: #000; }
+
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 80px;
+    border-top: 1px solid var(--border); padding-top: 40px;
+    opacity: 0; animation: fadeUp 0.8s 1s forwards;
+  }
+  .stat { text-align: left; }
+  .stat-n { font-family: var(--mono); font-size: 28px; color: var(--text-bright); font-weight: 700; }
+  .stat-l { font-size: 12px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.04em; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 100px 60px; }
+  .section-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    color: var(--text-dim); text-transform: uppercase; margin-bottom: 14px;
+  }
+  .section-title {
+    font-family: var(--head); font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700; color: var(--text-bright); margin-bottom: 16px; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 16px; color: var(--text-dim); max-width: 640px; line-height: 1.7;
+    margin-bottom: 60px;
+  }
+
+  /* ── TOOL PROFILES ── */
+  #tools { background: var(--bg); }
+
+  .tool-tabs {
+    display: flex; gap: 4px; margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em;
+    padding: 12px 22px; border: none; background: none; cursor: pointer;
+    color: var(--text-dim); border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--text-bright); }
+  .tab-btn.active { color: var(--text-bright); }
+  .tab-btn[data-tool="cowork"].active { border-color: var(--cowork); color: var(--cowork); }
+  .tab-btn[data-tool="code"].active   { border-color: var(--code);   color: var(--code);   }
+  .tab-btn[data-tool="codex"].active  { border-color: var(--codex);  color: var(--codex);  }
+  .tab-btn[data-tool="claw"].active   { border-color: var(--claw);   color: var(--claw);   }
+
+  .tool-panel { display: none; padding-top: 48px; }
+  .tool-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+
+  .tool-header {
+    grid-column: 1 / -1;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding-bottom: 32px; border-bottom: 1px solid var(--border);
+  }
+  .tool-name {
+    font-family: var(--head); font-size: 36px; font-weight: 800;
+    color: var(--text-bright); margin-bottom: 8px;
+  }
+  .tool-tagline { font-size: 15px; color: var(--text-dim); max-width: 480px; }
+  .tool-badge {
+    font-family: var(--mono); font-size: 11px; padding: 6px 14px;
+    border-radius: 4px; font-weight: 700; letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .info-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px;
+  }
+  .info-card-title {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    color: var(--text-dim); text-transform: uppercase; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .info-card-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .spec-list { display: flex; flex-direction: column; gap: 12px; }
+  .spec-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .spec-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .spec-key { color: var(--text-dim); font-size: 12.5px; }
+  .spec-val { color: var(--text-bright); font-family: var(--mono); font-size: 12px; text-align: right; max-width: 55%; }
+  .spec-val.good { color: #22c55e; }
+  .spec-val.warn { color: #f59e0b; }
+  .spec-val.bad  { color: #f87171; }
+
+  .feature-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ftag {
+    font-family: var(--mono); font-size: 11px; padding: 4px 10px;
+    border-radius: 4px; border: 1px solid var(--border);
+    color: var(--text-dim); letter-spacing: 0.04em;
+  }
+
+  .arch-diagram {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; font-family: var(--mono);
+    font-size: 11.5px; line-height: 2.2; color: var(--text-dim);
+    white-space: pre; overflow-x: auto;
+  }
+
+  .prose { font-size: 14px; line-height: 1.8; color: var(--text); }
+  .prose strong { color: var(--text-bright); font-weight: 600; }
+
+  /* ── COMPARISON TABLE ── */
+  #compare { background: var(--bg2); }
+
+  .compare-filters {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;
+  }
+  .filter-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    padding: 6px 14px; border-radius: 4px; cursor: pointer;
+    border: 1px solid var(--border); background: none; color: var(--text-dim);
+    transition: all 0.2s;
+  }
+  .filter-btn.active { background: var(--bg3); color: var(--text-bright); border-color: var(--border-bright); }
+  .filter-btn:hover { color: var(--text); }
+
+  .compare-table-wrap { overflow-x: auto; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13.5px; min-width: 800px;
+  }
+  thead th {
+    padding: 14px 18px; text-align: left;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--text-dim); border-bottom: 1px solid var(--border);
+    font-weight: 400; white-space: nowrap;
+  }
+  thead th:first-child { color: var(--text-bright); }
+  .th-cowork { color: var(--cowork) !important; }
+  .th-code   { color: var(--code) !important; }
+  .th-codex  { color: var(--codex) !important; }
+  .th-claw   { color: var(--claw) !important; }
+
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: var(--bg3); }
+  td {
+    padding: 13px 18px; vertical-align: middle;
+  }
+  td:first-child {
+    font-size: 12.5px; color: var(--text-dim); font-family: var(--mono); white-space: nowrap;
+  }
+  .cat-row td {
+    background: var(--bg3); font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase;
+    padding: 8px 18px; border-bottom: 1px solid var(--border);
+  }
+  .dot-yes  { color: #22c55e; font-weight: 700; }
+  .dot-no   { color: #f87171; }
+  .dot-part { color: #f59e0b; }
+
+  /* rating bars */
+  .rating-bar {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bar-track {
+    flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .bar-n { font-family: var(--mono); font-size: 11px; color: var(--text-dim); width: 28px; text-align: right; }
+
+  /* ── MEMORY VISUAL ── */
+  #memory { background: var(--bg); }
+
+  .memory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .mem-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 32px; position: relative; overflow: hidden;
+  }
+  .mem-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .mem-card.cowork::before { background: var(--cowork); }
+  .mem-card.code::before   { background: var(--code);   }
+  .mem-card.codex::before  { background: var(--codex);  }
+  .mem-card.claw::before   { background: var(--claw);   }
+
+  .mem-name {
+    font-family: var(--head); font-size: 18px; font-weight: 700;
+    color: var(--text-bright); margin-bottom: 6px;
+  }
+  .mem-type {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    margin-bottom: 24px;
+  }
+  .mem-type.cowork { color: var(--cowork); }
+  .mem-type.code   { color: var(--code); }
+  .mem-type.codex  { color: var(--codex); }
+  .mem-type.claw   { color: var(--claw); }
+
+  .mem-bars { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+  .mem-bar-row { display: flex; flex-direction: column; gap: 5px; }
+  .mem-bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-dim);
+  }
+  .mem-bar-label span:last-child { font-family: var(--mono); font-size: 11px; }
+  .mem-track { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .mem-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(.16,1,.3,1); }
+  .mem-fill.cowork { background: var(--cowork); }
+  .mem-fill.code   { background: var(--code);   }
+  .mem-fill.codex  { background: var(--codex);  }
+  .mem-fill.claw   { background: var(--claw);   }
+
+  .mem-desc { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+
+  /* ── SCENARIOS ── */
+  #scenarios { background: var(--bg2); }
+
+  .scenarios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  .scenario-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; cursor: pointer;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .scenario-card:hover { transform: translateY(-4px); }
+  .scenario-card.cowork:hover { border-color: var(--cowork); }
+  .scenario-card.code:hover   { border-color: var(--code);   }
+  .scenario-card.codex:hover  { border-color: var(--codex);  }
+  .scenario-card.claw:hover   { border-color: var(--claw);   }
+
+  .sc-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .sc-icon { font-size: 32px; margin-bottom: 12px; display: block; }
+  .sc-tool-badge {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.06em;
+  }
+  .badge-cowork { background: var(--cowork-dim); color: var(--cowork); border: 1px solid var(--cowork); }
+  .badge-code   { background: var(--code-dim);   color: var(--code);   border: 1px solid var(--code);   }
+  .badge-codex  { background: var(--codex-dim);  color: var(--codex);  border: 1px solid var(--codex);  }
+  .badge-claw   { background: var(--claw-dim);   color: var(--claw);   border: 1px solid var(--claw);   }
+
+  .sc-body { padding: 0 24px 24px; }
+  .sc-title {
+    font-family: var(--head); font-size: 16px; font-weight: 700;
+    color: var(--text-bright); margin-bottom: 8px;
+  }
+  .sc-context { font-size: 13px; color: var(--text-dim); line-height: 1.65; margin-bottom: 16px; }
+  .sc-steps { display: flex; flex-direction: column; gap: 6px; }
+  .sc-step {
+    display: flex; gap: 10px; font-size: 12.5px; color: var(--text-dim);
+    align-items: flex-start;
+  }
+  .sc-step-n {
+    font-family: var(--mono); font-size: 10px; width: 18px; height: 18px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px; font-weight: 700;
+  }
+  .n-cowork { background: var(--cowork-dim); color: var(--cowork); border: 1px solid var(--cowork); }
+  .n-code   { background: var(--code-dim);   color: var(--code);   border: 1px solid var(--code);   }
+  .n-codex  { background: var(--codex-dim);  color: var(--codex);  border: 1px solid var(--codex);  }
+  .n-claw   { background: var(--claw-dim);   color: var(--claw);   border: 1px solid var(--claw);   }
+
+  /* ── SECURITY ── */
+  #security { background: var(--bg); }
+
+  .security-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  .sec-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px;
+  }
+  .sec-name {
+    font-family: var(--head); font-size: 16px; font-weight: 700;
+    color: var(--text-bright); margin-bottom: 20px;
+  }
+  .risk-meter { margin-bottom: 20px; }
+  .risk-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-dim); margin-bottom: 8px;
+  }
+  .risk-label .risk-val { font-family: var(--mono); }
+  .risk-track {
+    height: 8px; background: var(--border); border-radius: 6px; overflow: hidden;
+  }
+  .risk-fill { height: 100%; border-radius: 6px; }
+
+  .sec-list { display: flex; flex-direction: column; gap: 10px; }
+  .sec-item { display: flex; gap: 8px; font-size: 12.5px; color: var(--text-dim); }
+  .sec-item-icon { flex-shrink: 0; margin-top: 2px; }
+
+  /* ── ECONOMICS ── */
+  #economics { background: var(--bg2); }
+
+  .econ-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  .econ-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px;
+    display: flex; flex-direction: column;
+  }
+  .econ-name {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .econ-price {
+    font-family: var(--head); font-size: 32px; font-weight: 800;
+    color: var(--text-bright); margin-bottom: 4px;
+  }
+  .econ-period { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; }
+  .econ-features { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .econ-feat { display: flex; gap: 8px; font-size: 13px; color: var(--text-dim); }
+
+  /* ── DECISION WIZARD ── */
+  #wizard { background: var(--bg); }
+
+  .wizard-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 48px; max-width: 800px; margin: 0 auto;
+  }
+  .wizard-q {
+    font-family: var(--head); font-size: 22px; font-weight: 600;
+    color: var(--text-bright); margin-bottom: 32px; line-height: 1.4;
+  }
+  .wizard-opts { display: flex; flex-direction: column; gap: 12px; }
+  .wizard-opt {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px; cursor: pointer;
+    font-size: 14.5px; color: var(--text); transition: all 0.2s;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .wizard-opt:hover { border-color: var(--border-bright); color: var(--text-bright); transform: translateX(4px); }
+  .opt-arrow { color: var(--text-dim); font-family: var(--mono); font-size: 16px; margin-left: auto; }
+
+  .wizard-result {
+    display: none; text-align: center;
+  }
+  .wizard-result.show { display: block; }
+  .result-tool {
+    font-family: var(--head); font-size: 40px; font-weight: 800;
+    margin-bottom: 16px;
+  }
+  .result-why { font-size: 15px; color: var(--text-dim); line-height: 1.7; max-width: 560px; margin: 0 auto 32px; }
+  .wizard-restart {
+    font-family: var(--mono); font-size: 12px; cursor: pointer;
+    color: var(--text-dim); border: 1px solid var(--border);
+    background: none; padding: 8px 18px; border-radius: 6px; letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .wizard-restart:hover { color: var(--text-bright); border-color: var(--border-bright); }
+  .wizard-progress {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 32px;
+  }
+  .prog-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+  .prog-dot.done { background: var(--gold); }
+
+  /* ── RADAR CHART ── */
+  #radar { background: var(--bg2); }
+  .radar-wrap {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+  }
+  .radar-legend { display: flex; flex-direction: column; gap: 18px; }
+  .legend-item { display: flex; align-items: center; gap: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-name { font-family: var(--mono); font-size: 12px; color: var(--text-bright); }
+  .legend-desc { font-size: 12.5px; color: var(--text-dim); }
+
+  /* ── TIMELINE ── */
+  #timeline { background: var(--bg); }
+  .tl-line {
+    position: relative; padding-left: 40px;
+    border-left: 2px solid var(--border);
+  }
+  .tl-item { margin-bottom: 40px; position: relative; }
+  .tl-dot {
+    position: absolute; left: -47px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg2); border: 2px solid var(--border-bright);
+  }
+  .tl-year { font-family: var(--mono); font-size: 11px; color: var(--gold); margin-bottom: 6px; }
+  .tl-title { font-family: var(--head); font-size: 16px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; }
+  .tl-desc { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg2); border-top: 1px solid var(--border);
+    padding: 40px 60px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-note { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+
+  /* ── UTIL ── */
+  .hidden { display: none; }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    section { padding: 70px 20px; }
+    #hero { padding: 120px 20px 60px; }
+    .tool-panel.active { grid-template-columns: 1fr; }
+    .tool-header { flex-direction: column; gap: 16px; }
+    .memory-grid, .scenarios-grid, .security-grid, .econ-grid { grid-template-columns: 1fr; }
+    .radar-wrap { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .hero-stats { flex-wrap: wrap; gap: 24px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>AI</span> AGENT INTEL // 2026</div>
+  <div class="nav-links">
+    <a href="#tools">Tools</a>
+    <a href="#compare">Compare</a>
+    <a href="#memory">Memory</a>
+    <a href="#scenarios">Scenarios</a>
+    <a href="#security">Security</a>
+    <a href="#economics">Pricing</a>
+    <a href="#wizard">Wizard</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+
+  <div class="hero-eyebrow">// Agentic AI Comparative Intelligence Report — Early 2026</div>
+  <h1 class="hero-title">The <em>Operating Systems</em><br>of Autonomous AI</h1>
+  <p class="hero-sub">An exhaustive, data-dense breakdown of the four platforms defining the agentic software era: architectural philosophies, security postures, memory systems, and the precise workflow each one wins.</p>
+
+  <div class="tool-pills">
+    <a href="#tools" class="tool-pill pill-cowork" data-tab="cowork">
+      <span class="pill-dot" style="background:var(--cowork)"></span>Claude Cowork
+    </a>
+    <a href="#tools" class="tool-pill pill-code" data-tab="code">
+      <span class="pill-dot" style="background:var(--code)"></span>Claude Code
+    </a>
+    <a href="#tools" class="tool-pill pill-codex" data-tab="codex">
+      <span class="pill-dot" style="background:var(--codex)"></span>OpenAI Codex
+    </a>
+    <a href="#tools" class="tool-pill pill-claw" data-tab="claw">
+      <span class="pill-dot" style="background:var(--claw)"></span>OpenClaw
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-n">4</div>
+      <div class="stat-l">Agentic Platforms Analyzed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">100K+</div>
+      <div class="stat-l">OpenClaw GitHub Stars</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">192K</div>
+      <div class="stat-l">Codex Context Tokens</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">92%</div>
+      <div class="stat-l">Claude Code Token Reuse Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">10 Days</div>
+      <div class="stat-l">Cowork Built with Claude Code</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ EVOLUTION TIMELINE -->
+<section id="timeline">
+  <div class="section-label">// 01 — Historical Context</div>
+  <h2 class="section-title">The Agentic Evolution</h2>
+  <p class="section-desc">From autocomplete to autonomous digital employee — the trajectory that made these platforms possible.</p>
+
+  <div class="tl-line">
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--codex)"></div>
+      <div class="tl-year">August 2021</div>
+      <div class="tl-title">OpenAI Codex (Original) — The Spark</div>
+      <div class="tl-desc">A fine-tuned GPT-3 descendant that translated natural language to code. Became the engine behind GitHub Copilot's early autocomplete suggestions. Architecture was inherently limited: reactive suggestions only, no repository-wide awareness, frequent syntactically-correct-but-functionally-flawed outputs.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--code)"></div>
+      <div class="tl-year">2023–2025</div>
+      <div class="tl-title">The ReAct Paradigm Shift</div>
+      <div class="tl-desc">Advanced reasoning models mastered the ReAct (Reasoning and Acting) framework: pause → evaluate environment → select tool → execute → ingest output → proceed. This mechanism enabled the creation of true "agents." The line between chatbot and autonomous executor crystallized: chatbots require prompt-by-prompt interaction; agents receive a high-level objective, formulate a multi-step plan, and interact with file directories, terminals, and web browsers independently.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--claw)"></div>
+      <div class="tl-year">Early 2026</div>
+      <div class="tl-title">The Agentic Explosion — OpenClaw Goes Viral</div>
+      <div class="tl-desc">The open-source OpenClaw project (originally "Clawdbot" / "Moltbot" by Peter Steinberger, who later joined OpenAI — triggering a cease-and-desist from Anthropic over naming) surpassed 100,000 GitHub stars. Anthropic rapidly responded with Claude Code and Cowork. NVIDIA announced NemoClaw at GTC 2026. Industry leaders declared this the dawn of the "operating system for personal AI."</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--cowork)"></div>
+      <div class="tl-year">Now — 2026</div>
+      <div class="tl-title">The Four-Way Ecosystem Split</div>
+      <div class="tl-desc">Four deeply differentiated platforms now serve radically different operators: enterprise knowledge workers (Cowork), synchronous developers (Claude Code), async engineering teams (OpenAI Codex), and sovereign background automation operators (OpenClaw). Employees will soon be supercharged by teams of frontier, specialized, and custom-built agents they deploy and manage — fundamentally reshaping corporate structure.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ TOOL PROFILES -->
+<section id="tools">
+  <div class="section-label">// 02 — Platform Deep Dives</div>
+  <h2 class="section-title">Full Tool Profiles</h2>
+  <p class="section-desc">Select a platform for comprehensive architectural, operational, and technical analysis drawn directly from primary sources.</p>
+
+  <div class="tool-tabs">
+    <button class="tab-btn active" data-tool="cowork" onclick="switchTab('cowork')">CLAUDE COWORK</button>
+    <button class="tab-btn" data-tool="code" onclick="switchTab('code')">CLAUDE CODE</button>
+    <button class="tab-btn" data-tool="codex" onclick="switchTab('codex')">OPENAI CODEX</button>
+    <button class="tab-btn" data-tool="claw" onclick="switchTab('claw')">OPENCLAW</button>
+  </div>
+
+  <!-- COWORK PANEL -->
+  <div class="tool-panel active" id="panel-cowork">
+    <div class="tool-header">
+      <div>
+        <div class="tool-name" style="color:var(--cowork)">Claude Cowork</div>
+        <div class="tool-tagline">Governed enterprise knowledge orchestration for non-technical workers. File-centric, steer-first, transparent by design.</div>
+      </div>
+      <span class="tool-badge" style="background:var(--cowork-dim);color:var(--cowork);border:1px solid var(--cowork)">ENTERPRISE · PREVIEW</span>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Core Specifications</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Target Audience</span><span class="spec-val">Non-technical enterprise knowledge workers</span></div>
+        <div class="spec-row"><span class="spec-key">Interface</span><span class="spec-val">macOS & Windows Desktop App</span></div>
+        <div class="spec-row"><span class="spec-key">Windows Req.</span><span class="spec-val warn">x64 only — no arm64 support</span></div>
+        <div class="spec-row"><span class="spec-key">Mobile Access</span><span class="spec-val warn">Message via mobile while desktop stays open</span></div>
+        <div class="spec-row"><span class="spec-key">Web/Mobile Native</span><span class="spec-val bad">Not available</span></div>
+        <div class="spec-row"><span class="spec-key">Connectivity</span><span class="spec-val warn">Requires active internet + open desktop</span></div>
+        <div class="spec-row"><span class="spec-key">Subscription Tier</span><span class="spec-val">Pro · Max · Team · Enterprise</span></div>
+        <div class="spec-row"><span class="spec-key">Session Sharing</span><span class="spec-val bad">Not supported in preview</span></div>
+        <div class="spec-row"><span class="spec-key">Cross-Session Memory</span><span class="spec-val warn">Limited — bounded project scope</span></div>
+        <div class="spec-row"><span class="spec-key">Built Using</span><span class="spec-val good">Claude Code — 10 days to build</span></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Architectural Philosophy</div>
+      <div class="prose">
+        <strong>Steerability-First Design:</strong> Unlike purely autonomous agents, Cowork is architected to pause and request human authorization before any significant, state-altering action. This mandatory governance checkpoints allow project managers and domain experts to course-correct at the exact moment it matters — preventing drift from business objectives during long-horizon tasks.<br><br>
+        <strong>Background Orchestration:</strong> Once assigned a complex task (e.g., analyzing a 45,000-word manuscript, summarizing fragmented calendars, compiling project management reports), Cowork autonomously generates a strategic execution plan, reads documents, conducts research, asks follow-up questions, and synthesizes formatted deliverables — all in the background.<br><br>
+        <strong>Parallel Workflow Management:</strong> A single human operator can orchestrate multiple background workflows simultaneously, effectively functioning as a manager of a digital team. Cowork can pair with the Claude Chrome extension to execute tasks requiring live browser access.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Ideal Task Types</div>
+      <div class="feature-tags">
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Dense document analysis</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Calendar summarization</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">PMO report compilation</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Legal research</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Spreadsheet generation</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Word document output</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Multi-step non-code workflows</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Advanced data analytics</span>
+        <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Browser-assisted research</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">External Integrations</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Corporate DB Connectors</span><span class="spec-val good">Supported via MCP</span></div>
+        <div class="spec-row"><span class="spec-key">Google Chrome Extension</span><span class="spec-val good">Live browser task execution</span></div>
+        <div class="spec-row"><span class="spec-key">Output Formats</span><span class="spec-val">Spreadsheets · Word Docs · Reports</span></div>
+        <div class="spec-row"><span class="spec-key">Enterprise Security Fit</span><span class="spec-val good">High — mandatory governance checkpoints</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODE PANEL -->
+  <div class="tool-panel" id="panel-code">
+    <div class="tool-header">
+      <div>
+        <div class="tool-name" style="color:var(--code)">Claude Code</div>
+        <div class="tool-tagline">Synchronous, terminal-native software engineering agent. Composable Unix-style utility with subagent orchestration architecture.</div>
+      </div>
+      <span class="tool-badge" style="background:var(--code-dim);color:var(--code);border:1px solid var(--code)">DEVELOPER · CLI</span>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Core Architecture</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Interface</span><span class="spec-val">Terminal CLI (Unix-style)</span></div>
+        <div class="spec-key">Design Pattern</span><span class="spec-val">Composable — pipe-able, parallelizable</span></div>
+        <div class="spec-row"><span class="spec-key">Config File</span><span class="spec-val good">CLAUDE.md (root directory)</span></div>
+        <div class="spec-row"><span class="spec-key">Storage</span><span class="spec-val">~/.claude/ (JSONL format)</span></div>
+        <div class="spec-row"><span class="spec-key">Token Reuse</span><span class="spec-val good">92% via Prefix Caching</span></div>
+        <div class="spec-row"><span class="spec-key">Crash Safety</span><span class="spec-val good">Real-time JSONL persistence</span></div>
+        <div class="spec-row"><span class="spec-key">Undo Mechanism</span><span class="spec-val good">/rewind — file history by content hash</span></div>
+        <div class="spec-row"><span class="spec-key">Config Tiers</span><span class="spec-val">Global · Local Machine · Team Project</span></div>
+        <div class="spec-row"><span class="spec-key">CI/CD Integration</span><span class="spec-val good">Native — designed for pipelines</span></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Subagent Orchestration</div>
+      <div class="prose">
+        <strong>Main Agent → Specialized Subagents:</strong> A single user request triggers a Main Agent (orchestrator) that dynamically spins up multiple specialized parallel subagents:<br><br>
+        • <strong>Explore Agents</strong> — traverse repository, analyze module dependencies<br>
+        • <strong>Plan Agent</strong> — research and document strategic approach in "plan mode"<br>
+        • <strong>Execute Phase</strong> — implement code modifications<br><br>
+        <strong>Documented Performance:</strong> 92 distinct LLM calls in 13 minutes using 7 parallel subagents to investigate codebase dependencies before writing a single corrective line of code.<br><br>
+        <strong>Prefix Caching:</strong> Immutable system instructions and tool descriptions are cached server-side, achieving 92% token reuse — dramatically reducing latency and cost of repeated context loads during extended sessions.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Agent Teams (Ephemeral Architecture)</div>
+      <div class="prose">
+        A novel paradigm: <strong>ephemeral, code-defined agents</strong>. Unlike durable agents with persistent identity, Claude Agent Teams are spun up for a specific task (e.g., reviewing a PR, debugging a complex service), complete the task in parallel, and entirely disappear — leaving no residual memory. Fast to create, economically cheap to experiment with. Perfect for one-off engineering explorations.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Claude Code Channels (Remote Access)</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Platforms</span><span class="spec-val">Telegram · Discord (via MCP)</span></div>
+        <div class="spec-row"><span class="spec-key">Setup</span><span class="spec-val">claude --channels flag</span></div>
+        <div class="spec-row"><span class="spec-key">Auth Method</span><span class="spec-val good">Cryptographic pairing codes + allowlists</span></div>
+        <div class="spec-row"><span class="spec-key">Unverified Requests</span><span class="spec-val good">Silently dropped by MCP server</span></div>
+        <div class="spec-row"><span class="spec-key">Origin</span><span class="spec-val">Direct counter to OpenClaw's mobile reach</span></div>
+        <div class="spec-row"><span class="spec-key">Use Cases</span><span class="spec-val">Code review · build triggers · repo health</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODEX PANEL -->
+  <div class="tool-panel" id="panel-codex">
+    <div class="tool-header">
+      <div>
+        <div class="tool-name" style="color:var(--codex)">OpenAI Codex</div>
+        <div class="tool-tagline">Cloud-native asynchronous autonomy. Long-horizon refactoring, massive context windows, and secure isolated sandboxes.</div>
+      </div>
+      <span class="tool-badge" style="background:var(--codex-dim);color:var(--codex);border:1px solid var(--codex)">CLOUD · GA</span>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Infrastructure & Models</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Core Models</span><span class="spec-val">GPT-5.1, GPT-5.2, GPT-5.3-Codex</span></div>
+        <div class="spec-row"><span class="spec-key">Real-time Variant</span><span class="spec-val good">GPT-5.3-Codex-Spark (Cerebras HW)</span></div>
+        <div class="spec-row"><span class="spec-key">Spark Speed</span><span class="spec-val good">~15× faster than standard Codex</span></div>
+        <div class="spec-row"><span class="spec-key">Context Window</span><span class="spec-val good">192,000 tokens</span></div>
+        <div class="spec-row"><span class="spec-key">Benchmark Accuracy</span><span class="spec-val good">70% on internal tasks</span></div>
+        <div class="spec-row"><span class="spec-key">Execution Environment</span><span class="spec-val good">Secure cloud sandbox VM (isolated)</span></div>
+        <div class="spec-row"><span class="spec-key">Repo Access</span><span class="spec-val">Full clone preloaded into sandbox</span></div>
+        <div class="spec-row"><span class="spec-key">Task Duration</span><span class="spec-val warn">1–30 min per task (async)</span></div>
+        <div class="spec-row"><span class="spec-key">Mid-Task Intervention</span><span class="spec-val bad">Not supported — cancel or wait</span></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Native Compaction Memory System</div>
+      <div class="prose">
+        <strong>The 192K Token Strategy:</strong> Rather than external vector databases, Codex uses sheer volumetric capacity — ingesting massive architectural context simultaneously.<br><br>
+        <strong>Native Compaction:</strong> As the agent approaches the 192K limit during complex multi-hour runs, algorithms automatically prune non-essential conversational history and intermediate reasoning steps while <em>mathematically preserving</em> critical code structures and logic pathways. This allows Codex to maintain uninterrupted focus on systemic refactoring tasks for periods exceeding <strong>24 hours</strong>, navigating across millions of lines of code without context collapse.<br><br>
+        <strong>AGENTS.md:</strong> Similar to Claude Code's CLAUDE.md, developers define project conventions and build commands here to guide the cloud agent.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Deliverable & Verification</div>
+      <div class="prose">
+        After each autonomous run, Codex delivers a structured, auditable package: <strong>clean code diffs</strong>, <strong>terminal execution logs</strong>, and <strong>detailed citations of test results</strong>. It frequently submits a completed pull request directly to the repository for human review — providing full transparency before any code touches production.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Ecosystem Integrations</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Slack Integration</span><span class="spec-val good">GA — query repos / delegate tasks</span></div>
+        <div class="spec-row"><span class="spec-key">Codex SDK</span><span class="spec-val good">Embed into proprietary CI/CD pipelines</span></div>
+        <div class="spec-row"><span class="spec-key">Codex App</span><span class="spec-val good">Native Windows & macOS desktop client</span></div>
+        <div class="spec-row"><span class="spec-key">ChatGPT Integration</span><span class="spec-val good">Unified across CLI, IDE, and desktop</span></div>
+        <div class="spec-row"><span class="spec-key">Business Rate Limit</span><span class="spec-val good">2× multiplier promotional offer</span></div>
+        <div class="spec-row"><span class="spec-key">Subscription Tiers</span><span class="spec-val">Plus · Pro · Team · Enterprise</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPENCLAW PANEL -->
+  <div class="tool-panel" id="panel-claw">
+    <div class="tool-header">
+      <div>
+        <div class="tool-name" style="color:var(--claw)">OpenClaw</div>
+        <div class="tool-tagline">Sovereign, open-source personal AI operating system. Decentralized, model-agnostic, always-on background automation with messaging-native control.</div>
+      </div>
+      <span class="tool-badge" style="background:var(--claw-dim);color:var(--claw);border:1px solid var(--claw)">OPEN SOURCE · 100K★</span>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Architecture Overview</div>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Model Agnosticism</span><span class="spec-val good">Claude · GPT · Gemini · Llama (Ollama)</span></div>
+        <div class="spec-row"><span class="spec-key">Execution</span><span class="spec-val">Entirely local on user hardware</span></div>
+        <div class="spec-row"><span class="spec-key">Data Sovereignty</span><span class="spec-val good">Absolute — no cloud required</span></div>
+        <div class="spec-row"><span class="spec-key">Gateway Daemon</span><span class="spec-val">systemd (Linux) / LaunchAgent (macOS)</span></div>
+        <div class="spec-row"><span class="spec-key">WebSocket Protocol</span><span class="spec-val good">ws://127.0.0.1:18789</span></div>
+        <div class="spec-row"><span class="spec-key">Memory System</span><span class="spec-val good">Filesystem + SQLite vector DB (sqlite-vec)</span></div>
+        <div class="spec-row"><span class="spec-key">Heartbeat Interval</span><span class="spec-val">30-min cron (configurable)</span></div>
+        <div class="spec-row"><span class="spec-key">License</span><span class="spec-val good">Open Source — no licensing fees</span></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Messaging Channel Adapters</div>
+      <div class="prose">
+        The Gateway manages Channel Adapters that <em>normalize</em> incoming data from external messaging platforms into the agent's command queue:<br><br>
+        <strong>WhatsApp · Telegram · Slack · Discord · Signal · iMessage</strong><br><br>
+        This transforms messaging apps from communication utilities into <strong>primary command-and-control interfaces</strong> for complex local system interactions. A WhatsApp voice note received by the gateway is transcribed into text and routed into the agent's command queue — automatically.<br><br>
+        Chinese tech giants (Tencent, Alibaba, ByteDance) have launched OpenClaw-based applications, deeply integrating agentic control into <strong>WeChat</strong>.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Agentic Loop (ReAct Implementation)</div>
+      <div class="arch-diagram">  [Normalized Message In]
+         ↓
+  [Assemble Context Package]
+  base prompt + skill index + memory
+         ↓
+  [LLM Call] ← model-agnostic
+         ↓
+  Action Required? ─── No ──→ [Final Text Response]
+         │
+        Yes
+         ↓
+  [Runtime Intercepts Request]
+  execute shell / read file / send email
+         ↓
+  [Capture stdout → Feed back]
+         ↓
+  [Loop continues autonomously]</div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Skills System & Heartbeat</div>
+      <div class="prose">
+        <strong>On-Demand Skill Loading:</strong> Rather than overloading the LLM context with all tool code, OpenClaw injects only a compact index of skill names + brief descriptions. When a task requires a specific skill, the runtime loads the corresponding SKILL.md on demand — keeping context lean.<br><br>
+        <strong>Proactive Heartbeat:</strong> Every 30 minutes (via cron), the agent autonomously wakes up, reviews the HEARTBEAT.md checklist, and independently decides if proactive action is needed: monitoring web endpoints, analyzing system logs, scraping websites for changes, dispatching daily briefings — with zero human prompting.<br><br>
+        <strong>Memory Files:</strong> SOUL.md (personality), MEMORY.md (permanent facts), YYYY-MM-DD.md (daily logs). Pre-compaction flush writes durable memories to disk before context truncation.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ COMPARISON TABLE -->
+<section id="compare">
+  <div class="section-label">// 03 — Multi-Criteria Comparison</div>
+  <h2 class="section-title">Head-to-Head Matrix</h2>
+  <p class="section-desc">Filter by category and compare all four platforms across every meaningful technical, operational, and strategic dimension.</p>
+
+  <div class="compare-filters">
+    <button class="filter-btn active" onclick="filterTable('all', this)">ALL CRITERIA</button>
+    <button class="filter-btn" onclick="filterTable('arch', this)">ARCHITECTURE</button>
+    <button class="filter-btn" onclick="filterTable('memory', this)">MEMORY</button>
+    <button class="filter-btn" onclick="filterTable('security', this)">SECURITY</button>
+    <button class="filter-btn" onclick="filterTable('workflow', this)">WORKFLOW</button>
+    <button class="filter-btn" onclick="filterTable('integration', this)">INTEGRATIONS</button>
+    <button class="filter-btn" onclick="filterTable('pricing', this)">PRICING</button>
+  </div>
+
+  <div class="compare-table-wrap">
+    <table id="comparison-table">
+      <thead>
+        <tr>
+          <th>CRITERION</th>
+          <th class="th-cowork">CLAUDE COWORK</th>
+          <th class="th-code">CLAUDE CODE</th>
+          <th class="th-codex">OPENAI CODEX</th>
+          <th class="th-claw">OPENCLAW</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ARCHITECTURE -->
+        <tr class="cat-row" data-cat="arch"><td colspan="5">⬡ ARCHITECTURE</td></tr>
+        <tr data-cat="arch">
+          <td>Execution Environment</td>
+          <td>Local desktop app</td>
+          <td>Local terminal CLI</td>
+          <td>Cloud sandbox VM</td>
+          <td>Local OS daemon</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Target User</td>
+          <td>Knowledge workers</td>
+          <td>Developers</td>
+          <td>Dev teams / Enterprise</td>
+          <td>Power users / Devs</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Model Lock-in</td>
+          <td>Claude only</td>
+          <td>Claude only</td>
+          <td>GPT-5 series only</td>
+          <td class="dot-yes">None — model-agnostic</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Execution Mode</td>
+          <td>Background async</td>
+          <td>Synchronous real-time</td>
+          <td>Asynchronous cloud</td>
+          <td>Continuous background</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Sub-agent Orchestration</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Yes — 7 parallel subagents documented</td>
+          <td class="dot-yes">Yes — autonomous multi-step</td>
+          <td class="dot-part">Partial — single ReAct loop</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Config / Guide File</td>
+          <td class="dot-no">None specified</td>
+          <td class="dot-yes">CLAUDE.md</td>
+          <td class="dot-yes">AGENTS.md</td>
+          <td class="dot-yes">SOUL.md + HEARTBEAT.md</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Internet Required</td>
+          <td class="dot-yes">Yes (mandatory)</td>
+          <td class="dot-yes">Yes</td>
+          <td class="dot-yes">Yes (cloud-first)</td>
+          <td class="dot-no">No — fully local possible</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Open Source</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Yes — 100K+ GitHub stars</td>
+        </tr>
+        <tr data-cat="arch">
+          <td>Proactive Autonomy</td>
+          <td class="dot-part">Partial — task-scoped</td>
+          <td class="dot-no">No — human-driven</td>
+          <td class="dot-part">Task-bound only</td>
+          <td class="dot-yes">Yes — 30-min Heartbeat cron</td>
+        </tr>
+
+        <!-- MEMORY -->
+        <tr class="cat-row" data-cat="memory"><td colspan="5">⬡ MEMORY & STATE</td></tr>
+        <tr data-cat="memory">
+          <td>Memory Architecture Type</td>
+          <td>Probabilistic / Ephemeral</td>
+          <td>Probabilistic / Ephemeral</td>
+          <td>Volumetric Context</td>
+          <td>Deterministic Filesystem + Vector DB</td>
+        </tr>
+        <tr data-cat="memory">
+          <td>Context Window</td>
+          <td>Standard Claude</td>
+          <td>Standard Claude</td>
+          <td class="dot-yes">192,000 tokens</td>
+          <td>Model-dependent</td>
+        </tr>
+        <tr data-cat="memory">
+          <td>Context Management</td>
+          <td>Autocompact summarization</td>
+          <td>Autocompact + 92% Prefix Cache</td>
+          <td>Native Compaction algorithms</td>
+          <td>Pre-compaction flush to disk</td>
+        </tr>
+        <tr data-cat="memory">
+          <td>Cross-Session Memory</td>
+          <td class="dot-part">Limited (project-scoped)</td>
+          <td class="dot-no">Ephemeral</td>
+          <td class="dot-part">Session-bound (resets at task end)</td>
+          <td class="dot-yes">Permanent (Markdown files + SQLite)</td>
+        </tr>
+        <tr data-cat="memory">
+          <td>Vector Search</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Yes — sqlite-vec hybrid semantic search</td>
+        </tr>
+        <tr data-cat="memory">
+          <td>Durable Memory Duration</td>
+          <td>Session only</td>
+          <td>Session only</td>
+          <td>Up to 24+ hours</td>
+          <td class="dot-yes">Days / weeks / permanently</td>
+        </tr>
+        <tr data-cat="memory">
+          <td>Crash Recovery</td>
+          <td class="dot-part">Limited</td>
+          <td class="dot-yes">JSONL real-time persistence</td>
+          <td class="dot-yes">Cloud-native (no local crash risk)</td>
+          <td class="dot-yes">Filesystem-backed</td>
+        </tr>
+
+        <!-- SECURITY -->
+        <tr class="cat-row" data-cat="security"><td colspan="5">⬡ SECURITY POSTURE</td></tr>
+        <tr data-cat="security">
+          <td>Overall Risk Profile</td>
+          <td class="dot-yes">Low — governed checkpoints</td>
+          <td class="dot-yes">Low — local, supervised</td>
+          <td class="dot-yes">Low — cloud-sandboxed</td>
+          <td class="dot-no">High — privileged local identity</td>
+        </tr>
+        <tr data-cat="security">
+          <td>Prompt Injection Risk</td>
+          <td class="dot-part">Moderate</td>
+          <td class="dot-part">Moderate</td>
+          <td class="dot-yes">Low (isolated cloud VM)</td>
+          <td class="dot-no">Very High (external messaging input)</td>
+        </tr>
+        <tr data-cat="security">
+          <td>Local File System Access</td>
+          <td class="dot-part">Controlled</td>
+          <td class="dot-yes">Full — by design</td>
+          <td class="dot-no">No (cloud only)</td>
+          <td class="dot-no">Full + credentials access</td>
+        </tr>
+        <tr data-cat="security">
+          <td>External Input Vectors</td>
+          <td>Low</td>
+          <td>Low + Channels (guarded)</td>
+          <td>None (cloud-only exec)</td>
+          <td class="dot-no">WhatsApp/Telegram/Signal/iMessage</td>
+        </tr>
+        <tr data-cat="security">
+          <td>Enterprise Sandboxing</td>
+          <td class="dot-yes">Built-in authorization pauses</td>
+          <td class="dot-part">Allowlists via Channels</td>
+          <td class="dot-yes">Full cloud VM isolation</td>
+          <td class="dot-part">NemoClaw (NVIDIA) required</td>
+        </tr>
+        <tr data-cat="security">
+          <td>Data Leaves Device?</td>
+          <td class="dot-yes">Yes — cloud API calls</td>
+          <td class="dot-yes">Yes — cloud API calls</td>
+          <td class="dot-yes">Yes — cloud execution</td>
+          <td class="dot-no">Not with local models (Llama/Ollama)</td>
+        </tr>
+
+        <!-- WORKFLOW -->
+        <tr class="cat-row" data-cat="workflow"><td colspan="5">⬡ WORKFLOW FIT</td></tr>
+        <tr data-cat="workflow">
+          <td>Non-Technical Users</td>
+          <td class="dot-yes">Primary audience</td>
+          <td class="dot-no">Requires CLI proficiency</td>
+          <td class="dot-part">Via Slack integration</td>
+          <td class="dot-no">High technical bar</td>
+        </tr>
+        <tr data-cat="workflow">
+          <td>Synchronous Coding</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Primary strength</td>
+          <td class="dot-no">Async only</td>
+          <td class="dot-part">Possible via messaging</td>
+        </tr>
+        <tr data-cat="workflow">
+          <td>Async Long-Horizon Tasks</td>
+          <td class="dot-part">Moderate</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Primary strength (24+ hrs)</td>
+          <td class="dot-yes">Continuous background</td>
+        </tr>
+        <tr data-cat="workflow">
+          <td>Legacy Code Refactoring</td>
+          <td class="dot-no">No</td>
+          <td class="dot-part">Short-session only</td>
+          <td class="dot-yes">Optimal — 192K context</td>
+          <td class="dot-no">Not specialized</td>
+        </tr>
+        <tr data-cat="workflow">
+          <td>Continuous Background Automation</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Primary strength — Heartbeat</td>
+        </tr>
+        <tr data-cat="workflow">
+          <td>Remote Mobile Control</td>
+          <td class="dot-part">Mobile message only</td>
+          <td class="dot-yes">Channels (Telegram/Discord)</td>
+          <td class="dot-no">Not directly</td>
+          <td class="dot-yes">WhatsApp/Telegram/Signal</td>
+        </tr>
+
+        <!-- INTEGRATION -->
+        <tr class="cat-row" data-cat="integration"><td colspan="5">⬡ INTEGRATIONS</td></tr>
+        <tr data-cat="integration">
+          <td>CI/CD Pipeline</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Native Unix piping</td>
+          <td class="dot-yes">Codex SDK</td>
+          <td class="dot-part">Via shell execution</td>
+        </tr>
+        <tr data-cat="integration">
+          <td>Slack</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">GA — native integration</td>
+          <td class="dot-yes">Channel adapter</td>
+        </tr>
+        <tr data-cat="integration">
+          <td>Telegram</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Channels MCP</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Channel adapter</td>
+        </tr>
+        <tr data-cat="integration">
+          <td>WhatsApp</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Channel adapter</td>
+        </tr>
+        <tr data-cat="integration">
+          <td>Browser Automation</td>
+          <td class="dot-yes">Claude Chrome extension</td>
+          <td class="dot-part">Via tools</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Shell-level execution</td>
+        </tr>
+        <tr data-cat="integration">
+          <td>GitHub / PR Workflow</td>
+          <td class="dot-no">No</td>
+          <td class="dot-yes">Native git integration</td>
+          <td class="dot-yes">Auto PR submission</td>
+          <td class="dot-part">Via shell</td>
+        </tr>
+
+        <!-- PRICING -->
+        <tr class="cat-row" data-cat="pricing"><td colspan="5">⬡ ECONOMICS & PRICING</td></tr>
+        <tr data-cat="pricing">
+          <td>Licensing Model</td>
+          <td>Subscription (Anthropic)</td>
+          <td>Subscription (Anthropic)</td>
+          <td>Subscription (OpenAI)</td>
+          <td class="dot-yes">Free (open source)</td>
+        </tr>
+        <tr data-cat="pricing">
+          <td>Base Price</td>
+          <td>Pro $20/mo</td>
+          <td>Pro $20/mo</td>
+          <td>Included in ChatGPT tiers</td>
+          <td>API cost only</td>
+        </tr>
+        <tr data-cat="pricing">
+          <td>Max / Power Tier</td>
+          <td>$200/mo (Claude Max)</td>
+          <td>$200/mo (Claude Max — 20× usage)</td>
+          <td>Enterprise pricing</td>
+          <td>Local compute cost only</td>
+        </tr>
+        <tr data-cat="pricing">
+          <td>Token-Based Billing</td>
+          <td class="dot-no">No — rate limits only</td>
+          <td class="dot-no">No — rate limits only</td>
+          <td class="dot-part">Subscription + usage</td>
+          <td class="dot-part">API key consumption</td>
+        </tr>
+        <tr data-cat="pricing">
+          <td>Priority Model Access</td>
+          <td class="dot-yes">Max: Claude Opus priority</td>
+          <td class="dot-yes">Max: Claude Opus priority</td>
+          <td class="dot-yes">Enterprise SLA</td>
+          <td>Depends on chosen model</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ MEMORY VISUAL -->
+<section id="memory">
+  <div class="section-label">// 04 — Memory Architecture</div>
+  <h2 class="section-title">How Each Tool Remembers</h2>
+  <p class="section-desc">Context and state retention is the primary technical hurdle for generative AI. These four platforms take radically divergent approaches — with profound implications for what each can actually accomplish.</p>
+
+  <div class="memory-grid">
+    <div class="mem-card cowork">
+      <div class="mem-name">Claude Cowork</div>
+      <div class="mem-type cowork">Probabilistic / Ephemeral</div>
+      <div class="mem-bars">
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Session Continuity</span><span>Medium</span></div>
+          <div class="mem-track"><div class="mem-fill cowork" style="width:55%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Cross-Session Durability</span><span>Low</span></div>
+          <div class="mem-track"><div class="mem-fill cowork" style="width:20%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Long-Horizon Task Fitness</span><span>Medium</span></div>
+          <div class="mem-track"><div class="mem-fill cowork" style="width:50%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Token Efficiency</span><span>High</span></div>
+          <div class="mem-track"><div class="mem-fill cowork" style="width:75%"></div></div>
+        </div>
+      </div>
+      <div class="mem-desc">Uses <strong>Autocompact</strong> to summarize long sessions and <strong>Prefix Caching</strong> to minimize repeated context loading. Relies on CLAUDE.md for static project guidance. Lacks durable cross-session history without manual documentation — excellent for immediate, bounded tasks but forgets inter-session architectural decisions.</div>
+    </div>
+
+    <div class="mem-card code">
+      <div class="mem-name">Claude Code</div>
+      <div class="mem-type code">Probabilistic / Ephemeral + Crash-Safe</div>
+      <div class="mem-bars">
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Session Continuity</span><span>High</span></div>
+          <div class="mem-track"><div class="mem-fill code" style="width:78%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Cross-Session Durability</span><span>Low</span></div>
+          <div class="mem-track"><div class="mem-fill code" style="width:18%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Long-Horizon Task Fitness</span><span>Medium</span></div>
+          <div class="mem-track"><div class="mem-fill code" style="width:45%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Token Efficiency</span><span>Excellent</span></div>
+          <div class="mem-track"><div class="mem-fill code" style="width:92%"></div></div>
+        </div>
+      </div>
+      <div class="mem-desc">Achieves <strong>92% token reuse</strong> via Prefix Caching — caching immutable system instructions server-side. JSONL files provide crash-safe real-time persistence. Autocompact summarizes within sessions. File history snapshots (keyed by content hash) enable /rewind. Agile for synchronous coding but can't recall decisions from weeks prior.</div>
+    </div>
+
+    <div class="mem-card codex">
+      <div class="mem-name">OpenAI Codex</div>
+      <div class="mem-type codex">Volumetric Context + Native Compaction</div>
+      <div class="mem-bars">
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Session Continuity</span><span>Excellent</span></div>
+          <div class="mem-track"><div class="mem-fill codex" style="width:95%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Cross-Session Durability</span><span>Medium</span></div>
+          <div class="mem-track"><div class="mem-fill codex" style="width:40%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Long-Horizon Task Fitness</span><span>Excellent</span></div>
+          <div class="mem-track"><div class="mem-fill codex" style="width:95%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Token Efficiency</span><span>Medium</span></div>
+          <div class="mem-track"><div class="mem-fill codex" style="width:50%"></div></div>
+        </div>
+      </div>
+      <div class="mem-desc"><strong>192,000-token context window</strong> ingests entire repositories simultaneously. Native Compaction algorithms prune conversational fluff while <em>mathematically preserving</em> critical code structures — enabling 24+ hour continuous runs across millions of lines. Session-bound: resets upon task completion, requiring no external vector DB.</div>
+    </div>
+
+    <div class="mem-card claw">
+      <div class="mem-name">OpenClaw</div>
+      <div class="mem-type claw">Deterministic Filesystem + SQLite Vector DB</div>
+      <div class="mem-bars">
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Session Continuity</span><span>High</span></div>
+          <div class="mem-track"><div class="mem-fill claw" style="width:80%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Cross-Session Durability</span><span>Permanent</span></div>
+          <div class="mem-track"><div class="mem-fill claw" style="width:100%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Long-Horizon Task Fitness</span><span>Excellent</span></div>
+          <div class="mem-track"><div class="mem-fill claw" style="width:90%"></div></div>
+        </div>
+        <div class="mem-bar-row">
+          <div class="mem-bar-label"><span>Token Efficiency</span><span>High</span></div>
+          <div class="mem-track"><div class="mem-fill claw" style="width:70%"></div></div>
+        </div>
+      </div>
+      <div class="mem-desc">Fully decouples memory from the model's RAM. Facts live in plain Markdown files (SOUL.md, MEMORY.md, YYYY-MM-DD.md) on disk. SQLite-vec enables hybrid <strong>semantic + keyword search</strong> across historical logs. Pre-compaction flush writes durable memories before context truncation. Maintains statefulness across days and weeks permanently.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ RADAR CHART -->
+<section id="radar">
+  <div class="section-label">// 05 — Capability Radar</div>
+  <h2 class="section-title">Capability Spider Chart</h2>
+  <p class="section-desc">Six dimensions plotted across all four platforms — a visual grammar for strategic selection.</p>
+
+  <div class="radar-wrap">
+    <canvas id="radarCanvas" width="500" height="500"></canvas>
+    <div class="radar-legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--cowork)"></div>
+        <div>
+          <div class="legend-name">CLAUDE COWORK</div>
+          <div class="legend-desc">Leads in enterprise governance, non-technical accessibility, and document output quality. Lower on raw technical autonomy.</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--code)"></div>
+        <div>
+          <div class="legend-name">CLAUDE CODE</div>
+          <div class="legend-desc">Peaks on developer speed, token efficiency, and synchronous coding. Lowest cross-session memory durability.</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--codex)"></div>
+        <div>
+          <div class="legend-name">OPENAI CODEX</div>
+          <div class="legend-desc">Dominates long-horizon task capacity and security isolation. Lower on local data sovereignty and proactive autonomy.</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--claw)"></div>
+        <div>
+          <div class="legend-name">OPENCLAW</div>
+          <div class="legend-desc">Unmatched memory durability, data sovereignty, and continuous autonomy. High security risk without NemoClaw layer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ REAL-WORLD SCENARIOS -->
+<section id="scenarios">
+  <div class="section-label">// 06 — Real-World Scenarios</div>
+  <h2 class="section-title">Scenarios Built for Each Tool</h2>
+  <p class="section-desc">Concrete, detailed use cases mapping each platform's strengths to organizational reality — the operational playbook for agentic AI adoption.</p>
+
+  <div class="scenarios-grid">
+
+    <div class="scenario-card cowork">
+      <div class="sc-header">
+        <span class="sc-icon">📋</span>
+        <span class="sc-tool-badge badge-cowork">COWORK</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">PMO Quarterly Report Compilation</div>
+        <div class="sc-context">A project manager at a 500-person firm must produce a 40-page Q2 report synthesizing inputs from 12 department heads, 3 stakeholder surveys, fragmented calendar data, and 8 budget spreadsheets.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-cowork">1</div><div>Manager assigns the task to Cowork, pointing it to the shared document folder. Cowork generates an execution plan for approval.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-cowork">2</div><div>Cowork reads all 12 department inputs, summarizes the 45,000-word corpus, and identifies gaps — pausing to ask clarifying questions.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-cowork">3</div><div>It pairs with the Claude Chrome extension to pull live KPI data from the project management dashboard.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-cowork">4</div><div>Cowork requests authorization before writing the final report. Manager approves. Deliverable: formatted Word doc + Excel summary.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card code">
+      <div class="sc-header">
+        <span class="sc-icon">⚡</span>
+        <span class="sc-tool-badge badge-code">CLAUDE CODE</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Real-Time Database Query Optimization</div>
+        <div class="sc-context">A developer notices a production API endpoint returning in 2.4 seconds. They need to diagnose the N+1 query problem, refactor the ORM calls, add indexes, and validate with test suite — all in the same morning.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-code">1</div><div>Developer runs Claude Code in terminal. An Explore Agent traverses the repository and maps all service dependencies in parallel.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-code">2</div><div>92 LLM calls across 7 parallel subagents analyze query patterns across 4 database models in 13 minutes.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-code">3</div><div>Execute Phase writes optimized queries. Developer reviews diffs. /rewind reverts any unwanted change via content-hash snapshot.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-code">4</div><div>All changes are piped into CI pipeline. Dev reviews CLAUDE.md to confirm architectural conventions were respected.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card codex">
+      <div class="sc-header">
+        <span class="sc-icon">🏗️</span>
+        <span class="sc-tool-badge badge-codex">CODEX</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Legacy Monolith-to-Microservices Migration</div>
+        <div class="sc-context">A 500,000-line Python monolith from 2018 must be decomposed into 12 independent microservices. The task will take 20+ hours and touch hundreds of files. No developer should be blocked during this.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-codex">1</div><div>Tech lead links the GitHub repository and submits a high-level architectural prompt to Codex via the desktop app.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-codex">2</div><div>Codex provisions a secure cloud VM, clones the repo, and begins analysis with its 192K-token context window — ingesting the entire codebase.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-codex">3</div><div>Native Compaction keeps the agent focused for 24+ hours. Engineers continue other work. No local compute consumed.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-codex">4</div><div>Codex submits a clean PR with diffs, terminal logs, and test citations. Engineers audit before merging. 70% accuracy benchmark.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card claw">
+      <div class="sc-header">
+        <span class="sc-icon">🤖</span>
+        <span class="sc-tool-badge badge-claw">OPENCLAW</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">24/7 Infrastructure Monitoring Agent</div>
+        <div class="sc-context">A DevOps engineer wants an always-on agent to monitor server logs, detect anomalies, send WhatsApp alerts at 3am if disk usage exceeds 90%, and generate a daily Slack briefing — with no human prompting.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-claw">1</div><div>OpenClaw runs as a LaunchAgent daemon. HEARTBEAT.md defines the monitoring checklist at 30-minute intervals.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">2</div><div>Every 30 minutes: agent wakes, scrapes /var/log/, runs the ReAct loop, decides if anomaly warrants action.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">3</div><div>At 3am, disk hits 91%. WhatsApp Channel Adapter fires an alert. Voice note response from engineer is transcribed and routed as command.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">4</div><div>MEMORY.md stores the incident. YYYY-MM-DD.md logs actions. Tomorrow's briefing references last night's anomaly from vector memory.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card code">
+      <div class="sc-header">
+        <span class="sc-icon">📱</span>
+        <span class="sc-tool-badge badge-code">CHANNELS</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Remote Build Triage via Telegram</div>
+        <div class="sc-context">A senior engineer is at a conference. Their CI pipeline fails at 2pm. They need to check build logs, run a targeted test suite, and authorize a hotfix — all from their phone.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-code">1</div><div>Their office laptop runs Claude Code. Channels MCP connects it to their personal Telegram bot (BotFather-initialized).</div></div>
+          <div class="sc-step"><div class="sc-step-n n-code">2</div><div>They receive a Telegram message: "Build #247 failed — TypeError in payments module." They reply: "Run payment test suite."</div></div>
+          <div class="sc-step"><div class="sc-step-n n-code">3</div><div>Cryptographic pairing code validates their sender ID. Unverified IDs are silently dropped. Command executes locally on their workstation.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-code">4</div><div>Test output returns to Telegram. They reply: "Apply the stripe_v3 fix from last week." Claude Code locates the commit and applies it.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card codex">
+      <div class="sc-header">
+        <span class="sc-icon">🏢</span>
+        <span class="sc-tool-badge badge-codex">CODEX SDK</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Overnight CI/CD Failure Auto-Remediation</div>
+        <div class="sc-context">Engineering leadership wants Codex embedded in their pipeline so that a failing overnight build automatically triggers root cause analysis, patch generation, and PR submission — before the team arrives at 9am.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-codex">1</div><div>Codex SDK is embedded into their GitHub Actions workflow. A failed build webhook fires at 2:17am.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-codex">2</div><div>Codex spins up a cloud VM, clones the repo, identifies the regressing commit, and begins writing a patch — all autonomously.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-codex">3</div><div>Slack integration posts to #incidents: "Codex identified regression in commit 4f8a2d. Patch under review. ETA: 20 min."</div></div>
+          <div class="sc-step"><div class="sc-step-n n-codex">4</div><div>Team arrives at 9am to a clean PR with full diff, test logs, and citation of the root cause. One-click merge to production.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card claw">
+      <div class="sc-header">
+        <span class="sc-icon">🔒</span>
+        <span class="sc-tool-badge badge-claw">NEMOCLAW</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Classified Document Processing (Air-Gapped)</div>
+        <div class="sc-context">A defense contractor needs to run AI analysis on classified internal documents. Data cannot leave the building. Cloud APIs are prohibited. They need persistent, sovereign intelligence.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-claw">1</div><div>NemoClaw installed with one command. NVIDIA OpenShell runtime wraps OpenClaw with kernel-level sandboxing.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">2</div><div>Llama/Nemotron model runs locally via Ollama. Zero API calls. Zero data leaves the device.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">3</div><div>Privacy router actively monitors all outbound communications. Any attempt to send sensitive data to external endpoints is immediately blocked.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">4</div><div>Agent maintains permanent MEMORY.md archive of all analyses. Semantic search retrieves decisions from months-old sessions.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card cowork">
+      <div class="sc-header">
+        <span class="sc-icon">⚖️</span>
+        <span class="sc-tool-badge badge-cowork">COWORK</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Legal Research & Contract Analysis</div>
+        <div class="sc-context">A paralegal must analyze 200 contracts for a specific indemnification clause type, flag high-risk clauses, and produce a summary memo for the senior partner — without any coding knowledge.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-cowork">1</div><div>Paralegal opens Cowork desktop app and assigns the 200-document analysis task. Cowork generates a plan: classify → extract → flag → summarize.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-cowork">2</div><div>Cowork reads each contract, identifies indemnification clauses, and categorizes risk levels — running in the background while the paralegal works on other tasks.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-cowork">3</div><div>It pauses to ask: "Should I include mutual indemnification clauses or only one-sided?" Human provides direction. Workflow resumes.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-cowork">4</div><div>Deliverable: formatted Word memo with risk-ranked contract table, flagged clauses, and recommended action items for the partner.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card claw">
+      <div class="sc-header">
+        <span class="sc-icon">🌐</span>
+        <span class="sc-tool-badge badge-claw">OPENCLAW</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-title">Personal Research Intelligence Pipeline</div>
+        <div class="sc-context">A VC analyst wants their agent to track 50 competitor websites, flag any funding announcements or product launches, and deliver a WhatsApp voice briefing every morning at 8am automatically.</div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-n n-claw">1</div><div>HEARTBEAT.md configured: every 6 hours, scrape 50 URLs, compare against previous snapshots stored in MEMORY.md.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">2</div><div>Autonomous ReAct loop: detect change → classify significance → write to daily log → decide if immediate WhatsApp alert warranted.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">3</div><div>At 8am, cron triggers morning briefing. Agent retrieves sqlite-vec memory of week's changes and synthesizes a spoken briefing via WhatsApp.</div></div>
+          <div class="sc-step"><div class="sc-step-n n-claw">4</div><div>Analyst replies by voice note: "Deep dive on Series B announcement from Acme." Agent transcribes, researches, reports back — full autonomy.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ SECURITY -->
+<section id="security">
+  <div class="section-label">// 07 — Security Posture Analysis</div>
+  <h2 class="section-title">Security Threat Matrix</h2>
+  <p class="section-desc">Cybersecurity is the primary bottleneck for agentic AI enterprise adoption. These platforms vary dramatically — from tightly governed to actively dangerous without proper containment.</p>
+
+  <div class="security-grid">
+
+    <div class="sec-card">
+      <div class="sec-name" style="color:var(--cowork)">Claude Cowork</div>
+      <div class="risk-meter">
+        <div class="risk-label"><span>Overall Risk</span><span class="risk-val" style="color:var(--cowork)">LOW</span></div>
+        <div class="risk-track"><div class="risk-fill" style="width:20%;background:var(--cowork)"></div></div>
+      </div>
+      <div class="sec-list">
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--cowork)">✓</span><span>Mandatory authorization pauses before state-altering actions</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--cowork)">✓</span><span>Designed for transparent governance — human always in loop</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--cowork)">✓</span><span>Operates on user-accessible files only</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--gold)">⚠</span><span>Requires internet — cloud API data transmission</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--gold)">⚠</span><span>Chrome extension pairs — browser access scope must be managed</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--cowork)">✓</span><span>Ideal for legal, PMO, and compliance environments</span></div>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-name" style="color:var(--code)">Claude Code</div>
+      <div class="risk-meter">
+        <div class="risk-label"><span>Overall Risk</span><span class="risk-val" style="color:var(--gold)">MODERATE</span></div>
+        <div class="risk-track"><div class="risk-fill" style="width:40%;background:var(--gold)"></div></div>
+      </div>
+      <div class="sec-list">
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--code)">✓</span><span>Synchronous — developer supervises every action in real-time</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--code)">✓</span><span>/rewind undo via file-history content hashes</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--code)">✓</span><span>Channels use cryptographic pairing + sender allowlists</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--code)">✓</span><span>Unverified Channels messages silently dropped</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--gold)">⚠</span><span>Full local filesystem access — execute permissions</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--gold)">⚠</span><span>Channels exposes terminal to Telegram/Discord networks</span></div>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-name" style="color:var(--codex)">OpenAI Codex</div>
+      <div class="risk-meter">
+        <div class="risk-label"><span>Overall Risk</span><span class="risk-val" style="color:var(--cowork)">LOWEST</span></div>
+        <div class="risk-track"><div class="risk-fill" style="width:15%;background:var(--codex)"></div></div>
+      </div>
+      <div class="sec-list">
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--codex)">✓</span><span>Executes exclusively in isolated cloud sandbox VMs</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--codex)">✓</span><span>No code runs on local machine — complete isolation</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--codex)">✓</span><span>Full audit trail: diffs, terminal logs, test citations</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--codex)">✓</span><span>Pull request workflow — human reviews before merge</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--gold)">⚠</span><span>All code and repo data transmitted to OpenAI cloud</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--gold)">⚠</span><span>No mid-task intervention — must cancel or wait out</span></div>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-name" style="color:var(--claw)">OpenClaw</div>
+      <div class="risk-meter">
+        <div class="risk-label"><span>Overall Risk</span><span class="risk-val" style="color:var(--red)">CRITICAL</span></div>
+        <div class="risk-track"><div class="risk-fill" style="width:90%;background:var(--red)"></div></div>
+      </div>
+      <div class="sec-list">
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--red)">✗</span><span>Full access to local filesystem, credentials, SSH keys</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--red)">✗</span><span>Connected to WhatsApp/Telegram — massive untrusted input surface</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--red)">✗</span><span>Prompt injection via crafted message could exfiltrate SSH keys</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--red)">✗</span><span>Can execute destructive shell commands autonomously</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--red)">✗</span><span>Functions as a highly privileged identity in local network</span></div>
+        <div class="sec-item"><span class="sec-item-icon" style="color:var(--claw)">→</span><span><strong>MITIGATION:</strong> NemoClaw (NVIDIA OpenShell) — kernel sandboxing + privacy router. Required for enterprise.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ ECONOMICS -->
+<section id="economics">
+  <div class="section-label">// 08 — Economic Architecture</div>
+  <h2 class="section-title">Pricing & Subscription Models</h2>
+  <p class="section-desc">The financial architecture for deploying and scaling these agents varies dramatically — directly shaping enterprise adoption strategy.</p>
+
+  <div class="econ-grid">
+
+    <div class="econ-card" style="border-color:var(--cowork)33">
+      <div class="econ-name" style="color:var(--cowork)">// CLAUDE COWORK</div>
+      <div class="econ-price">$20</div>
+      <div class="econ-period">Pro tier / month (or $200/mo Max)</div>
+      <div class="econ-features">
+        <div class="econ-feat"><span style="color:var(--cowork)">✓</span><span>Available on Pro, Max, Team, and Enterprise plans</span></div>
+        <div class="econ-feat"><span style="color:var(--cowork)">✓</span><span>Dynamic rate-limit model — not fixed token caps</span></div>
+        <div class="econ-feat"><span style="color:var(--cowork)">✓</span><span>Max plan: 20× usage capacity vs Pro</span></div>
+        <div class="econ-feat"><span style="color:var(--cowork)">✓</span><span>Max subscribers: guaranteed Claude Opus priority access</span></div>
+        <div class="econ-feat"><span style="color:var(--gold)">⚠</span><span>Preview state — some features locked</span></div>
+        <div class="econ-feat"><span style="color:var(--text-dim)">→</span><span>API required separately for backend automation</span></div>
+      </div>
+    </div>
+
+    <div class="econ-card" style="border-color:var(--code)33">
+      <div class="econ-name" style="color:var(--code)">// CLAUDE CODE</div>
+      <div class="econ-price">$20–200</div>
+      <div class="econ-period">Pro / Max / month</div>
+      <div class="econ-features">
+        <div class="econ-feat"><span style="color:var(--code)">✓</span><span>Pro ($20): standard usage via rate limits</span></div>
+        <div class="econ-feat"><span style="color:var(--code)">✓</span><span>Max ($200): 20× usage — optimal for intensive agentic ops</span></div>
+        <div class="econ-feat"><span style="color:var(--code)">✓</span><span>No per-token billing — predictable spend for long sessions</span></div>
+        <div class="econ-feat"><span style="color:var(--code)">✓</span><span>Economical vs raw API for terminal dev — 92% token reuse</span></div>
+        <div class="econ-feat"><span style="color:var(--code)">✓</span><span>Max: Claude Opus guaranteed priority during peak traffic</span></div>
+        <div class="econ-feat"><span style="color:var(--text-dim)">→</span><span>For enterprise: API remains needed for 3rd-party automation</span></div>
+      </div>
+    </div>
+
+    <div class="econ-card" style="border-color:var(--codex)33">
+      <div class="econ-name" style="color:var(--codex)">// OPENAI CODEX</div>
+      <div class="econ-price">Bundled</div>
+      <div class="econ-period">Included in ChatGPT tiers</div>
+      <div class="econ-features">
+        <div class="econ-feat"><span style="color:var(--codex)">✓</span><span>Embedded in Plus, Pro, Team, Enterprise ChatGPT plans</span></div>
+        <div class="econ-feat"><span style="color:var(--codex)">✓</span><span>Highly predictable OpEx — subscription model</span></div>
+        <div class="econ-feat"><span style="color:var(--codex)">✓</span><span>2× rate limit multiplier promo for business users (Codex App)</span></div>
+        <div class="econ-feat"><span style="color:var(--codex)">✓</span><span>SDK available for proprietary CI/CD embedding</span></div>
+        <div class="econ-feat"><span style="color:var(--codex)">✓</span><span>No local compute costs — all cloud-executed</span></div>
+        <div class="econ-feat"><span style="color:var(--gold)">⚠</span><span>Enterprise contract pricing for large-scale SDK deployments</span></div>
+      </div>
+    </div>
+
+    <div class="econ-card" style="border-color:var(--claw)33">
+      <div class="econ-name" style="color:var(--claw)">// OPENCLAW</div>
+      <div class="econ-price">$0</div>
+      <div class="econ-period">Open source — compute cost only</div>
+      <div class="econ-features">
+        <div class="econ-feat"><span style="color:var(--claw)">✓</span><span>Zero licensing fees — fully open source</span></div>
+        <div class="econ-feat"><span style="color:var(--claw)">✓</span><span>Local Llama/Nemotron via Ollama: near-zero API cost</span></div>
+        <div class="econ-feat"><span style="color:var(--claw)">✓</span><span>Pay only for frontier API calls (Claude/GPT/Gemini) if used</span></div>
+        <div class="econ-feat"><span style="color:var(--claw)">✓</span><span>No subscription lock-in — swap models freely</span></div>
+        <div class="econ-feat"><span style="color:var(--red)">✗</span><span>NemoClaw / enterprise security adds infrastructure cost</span></div>
+        <div class="econ-feat"><span style="color:var(--gold)">⚠</span><span>High setup cost: engineering time for self-hosting</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ DECISION WIZARD -->
+<section id="wizard">
+  <div class="section-label">// 09 — Decision Wizard</div>
+  <h2 class="section-title">Which Tool Do You Need?</h2>
+  <p class="section-desc">Answer five questions to get a strategic recommendation for your specific use case.</p>
+
+  <div class="wizard-box">
+    <div class="wizard-progress" id="wizard-progress">
+      <div class="prog-dot done" id="pd0"></div>
+      <div class="prog-dot" id="pd1"></div>
+      <div class="prog-dot" id="pd2"></div>
+      <div class="prog-dot" id="pd3"></div>
+      <div class="prog-dot" id="pd4"></div>
+    </div>
+
+    <div id="wizard-questions">
+      <div class="wizard-q" id="wq"></div>
+      <div class="wizard-opts" id="wo"></div>
+    </div>
+
+    <div class="wizard-result" id="wizard-result">
+      <div class="result-tool" id="result-tool"></div>
+      <div class="result-why" id="result-why"></div>
+      <button class="wizard-restart" onclick="startWizard()">↺ Start Over</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-note">// AI AGENT INTEL — Based on primary source research, accessed March 25, 2026</div>
+  <div class="footer-note">COWORK · CODE · CODEX · OPENCLAW</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════ TAB SWITCHING
+function switchTab(tool) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+  document.getElementById(`panel-${tool}`).classList.add('active');
+}
+
+// Hero pill links to tabs
+document.querySelectorAll('.tool-pill[data-tab]').forEach(pill => {
+  pill.addEventListener('click', e => {
+    const tab = pill.getAttribute('data-tab');
+    setTimeout(() => switchTab(tab), 400);
+  });
+});
+
+// ══════════════════════════════════════════════ TABLE FILTERING
+function filterTable(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('tbody tr').forEach(row => {
+    if (cat === 'all') {
+      row.style.display = '';
+    } else {
+      const rowCat = row.getAttribute('data-cat');
+      row.style.display = (rowCat === cat) ? '' : 'none';
+    }
+  });
+}
+
+// ══════════════════════════════════════════════ RADAR CHART
+function drawRadar() {
+  const canvas = document.getElementById('radarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.38;
+
+  const labels = ['Dev Speed', 'Memory Durability', 'Security', 'Autonomy', 'Accessibility', 'Sovereignty'];
+  const n = labels.length;
+
+  // Data: [dev speed, memory durability, security, autonomy, accessibility, sovereignty]
+  const datasets = [
+    { name: 'Cowork',  color: '#22c55e', data: [2, 3, 8, 5, 9, 3] },
+    { name: 'Code',    color: '#38bdf8', data: [9, 2, 7, 4, 5, 3] },
+    { name: 'Codex',   color: '#a78bfa', data: [7, 5, 9, 7, 6, 2] },
+    { name: 'OpenClaw',color: '#fb923c', data: [4, 9, 2, 9, 5, 10] },
+  ];
+
+  const max = 10;
+
+  function getPoint(i, val, extra = 0) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const r = (val / max) * (R + extra);
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  }
+
+  // BG
+  ctx.fillStyle = '#0c0e1a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  for (let g = 2; g <= 10; g += 2) {
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const p = getPoint(i, g);
+      i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = g === 10 ? '#2a2f5a' : '#1d2040';
+    ctx.lineWidth = g === 10 ? 1.5 : 1;
+    ctx.stroke();
+  }
+
+  // Spokes + labels
+  for (let i = 0; i < n; i++) {
+    const p = getPoint(i, max);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = '#1d2040';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const lp = getPoint(i, max + 2.5);
+    ctx.fillStyle = '#6b7490';
+    ctx.font = '11px "Space Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(labels[i], lp.x, lp.y);
+  }
+
+  // Datasets
+  datasets.forEach(ds => {
+    ctx.beginPath();
+    ds.data.forEach((val, i) => {
+      const p = getPoint(i, val);
+      i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = ds.color + '22';
+    ctx.fill();
+    ctx.strokeStyle = ds.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Dots
+    ds.data.forEach((val, i) => {
+      const p = getPoint(i, val);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = ds.color;
+      ctx.fill();
+    });
+  });
+}
+
+// ══════════════════════════════════════════════ DECISION WIZARD
+const questions = [
+  {
+    q: "What's the primary role of the person using this tool?",
+    opts: [
+      { text: "Non-technical — manager, analyst, legal, operations", next: 1 },
+      { text: "Software developer / engineer", next: 2 },
+      { text: "DevOps / infrastructure / power user", next: 3 },
+      { text: "Enterprise architect / team lead", next: 4 },
+    ]
+  },
+  { // Q1 — non-technical
+    q: "What kind of output do they primarily need?",
+    opts: [
+      { text: "Formatted documents, reports, spreadsheets", result: 'cowork' },
+      { text: "Autonomous background monitoring, no output prompting", result: 'claw_note' },
+    ]
+  },
+  { // Q2 — developer
+    q: "What's the primary coding workflow?",
+    opts: [
+      { text: "Rapid, real-time iterative coding alongside me in the terminal", result: 'code' },
+      { text: "Long-horizon refactoring or migration I can hand off and walk away from", result: 'codex' },
+      { text: "Remote control of my workstation from my phone", result: 'channels' },
+    ]
+  },
+  { // Q3 — devops
+    q: "What's the security / data requirement?",
+    opts: [
+      { text: "Must run entirely locally — data cannot leave the machine", result: 'claw_local' },
+      { text: "Local is preferred but cloud APIs acceptable", result: 'claw' },
+      { text: "I need continuous proactive monitoring without human prompting", result: 'claw' },
+    ]
+  },
+  { // Q4 — team lead
+    q: "What's the primary bottleneck?",
+    opts: [
+      { text: "Automating overnight CI/CD failures and PR generation", result: 'codex_sdk' },
+      { text: "Enabling non-technical teammates to delegate complex tasks to AI", result: 'cowork_team' },
+      { text: "Giving developers mobile access to terminal sessions securely", result: 'channels' },
+    ]
+  },
+];
+
+const results = {
+  cowork: {
+    name: "✅ Claude Cowork",
+    color: 'var(--cowork)',
+    why: "Cowork is purpose-built for non-technical knowledge workers. Its steerability-first design, mandatory authorization checkpoints, and formatted document output (Word, spreadsheets) make it the clear choice. It requires no CLI proficiency and excels at multi-document synthesis, legal research, PMO workflows, and calendar analysis."
+  },
+  claw_note: {
+    name: "⚠️ OpenClaw + NemoClaw",
+    color: 'var(--claw)',
+    why: "For autonomous background automation requiring no human prompting, OpenClaw's Heartbeat cron system is uniquely capable. However, for a non-technical user, the setup complexity and critical security risks require NemoClaw's sandboxing layer and an IT team to configure it safely. Not a self-serve tool."
+  },
+  code: {
+    name: "⚡ Claude Code",
+    color: 'var(--code)',
+    why: "Claude Code is the premier synchronous, terminal-native engineering agent. Its subagent orchestration (Explore → Plan → Execute), 92% prefix caching, composable Unix design, JSONL crash safety, and /rewind undo system make it exceptionally fast for real-time iterative development."
+  },
+  codex: {
+    name: "🏗️ OpenAI Codex",
+    color: 'var(--codex)',
+    why: "For long-horizon tasks you hand off and walk away from — legacy refactoring, large-scale migrations, extended test suite generation — Codex's 192K-token context, Native Compaction (24+ hour runs), and secure cloud sandbox are purpose-built. It delivers verifiable PRs with full audit trails."
+  },
+  channels: {
+    name: "📱 Claude Code Channels",
+    color: 'var(--code)',
+    why: "Claude Code Channels (Telegram/Discord via MCP) is exactly designed for this — secure, cryptographic pairing codes, sender allowlists, and silent rejection of unverified messages provide enterprise-grade security for mobile terminal access. Trigger builds, code reviews, and repo queries from anywhere."
+  },
+  claw_local: {
+    name: "🔒 OpenClaw + NemoClaw",
+    color: 'var(--claw)',
+    why: "For classified or proprietary data that cannot leave the device, OpenClaw with local Llama/Nemotron models via Ollama makes zero cloud API calls. NemoClaw adds kernel-level sandboxing, policy guardrails, and a privacy router that blocks unauthorized data exfiltration — the only truly sovereign setup."
+  },
+  claw: {
+    name: "🤖 OpenClaw",
+    color: 'var(--claw)',
+    why: "OpenClaw's Heartbeat cron mechanism, ReAct agentic loop, and persistent Markdown + vector DB memory make it uniquely suited for continuous background automation — monitoring logs, scraping endpoints, sending alerts, and dispatching briefings with zero daily human intervention."
+  },
+  codex_sdk: {
+    name: "🏢 OpenAI Codex SDK",
+    color: 'var(--codex)',
+    why: "The Codex SDK embeds agentic capabilities directly into CI/CD pipelines. It can autonomously detect a failed overnight build, spin up a cloud sandbox, identify the regressing commit, write a patch, and submit a PR — before the engineering team arrives in the morning."
+  },
+  cowork_team: {
+    name: "✅ Claude Cowork (Team Plan)",
+    color: 'var(--cowork)',
+    why: "Cowork on Team or Enterprise plans empowers non-technical personnel to direct complex multi-step AI workflows without code. As a manager of digital workers, team leads can orchestrate multiple parallel background workflows simultaneously, each governed by mandatory authorization checkpoints."
+  }
+};
+
+let step = 0;
+let questionPath = [];
+
+function startWizard() {
+  step = 0;
+  questionPath = [0];
+  document.getElementById('wizard-result').classList.remove('show');
+  document.getElementById('wizard-questions').style.display = '';
+  updateProgress(0);
+  renderQuestion(0);
+}
+
+function renderQuestion(qi) {
+  const q = questions[qi];
+  document.getElementById('wq').textContent = q.q;
+  const woEl = document.getElementById('wo');
+  woEl.innerHTML = '';
+  q.opts.forEach(opt => {
+    const btn = document.createElement('div');
+    btn.className = 'wizard-opt';
+    btn.innerHTML = `<span>${opt.text}</span><span class="opt-arrow">→</span>`;
+    btn.onclick = () => handleOpt(opt);
+    woEl.appendChild(btn);
+  });
+}
+
+function handleOpt(opt) {
+  if (opt.result) {
+    showResult(opt.result);
+  } else {
+    step++;
+    updateProgress(step);
+    renderQuestion(opt.next);
+  }
+}
+
+function showResult(key) {
+  const r = results[key];
+  document.getElementById('wizard-questions').style.display = 'none';
+  const resultEl = document.getElementById('wizard-result');
+  resultEl.classList.add('show');
+  document.getElementById('result-tool').textContent = r.name;
+  document.getElementById('result-tool').style.color = r.color;
+  document.getElementById('result-why').textContent = r.why;
+  updateProgress(5);
+}
+
+function updateProgress(s) {
+  for (let i = 0; i < 5; i++) {
+    document.getElementById(`pd${i}`).classList.toggle('done', i <= s);
+  }
+}
+
+// ══════════════════════════════════════════════ INIT
+window.addEventListener('load', () => {
+  drawRadar();
+  startWizard();
+
+  // Animate memory bars on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.mem-fill').forEach(bar => {
+          const w = bar.style.width;
+          bar.style.width = '0';
+          setTimeout(() => { bar.style.width = w; }, 100);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.mem-card').forEach(card => observer.observe(card));
+});
+</script>
+</body>
+</html>
