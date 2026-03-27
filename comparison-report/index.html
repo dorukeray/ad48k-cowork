@@ -522,29 +522,53 @@
         <h3 class="subsection-heading"><i class="ti ti-wand"></i> Scenario Matcher Engine</h3>
         <div class="scenario-layout">
           <div class="scenario-cards">
-            <div class="scase-card" onclick="matchScenario('cowork')">
+            <!-- 6 Scenario Cards -->
+            <div class="scase-card" onclick="matchScenario('sc1')">
               <div class="scase-icon cowork-icon"></div>
-              <h4><i class="ti ti-briefcase"></i> Non-Technical Project Management</h4>
+              <h4><i class="ti ti-briefcase"></i> Legal Document Parsing</h4>
             </div>
-            <div class="scase-card" onclick="matchScenario('code')">
+            <div class="scase-card" onclick="matchScenario('sc2')">
               <div class="scase-icon code-icon"></div>
-              <h4><i class="ti ti-terminal-2"></i> Synchronous Code Generation</h4>
+              <h4><i class="ti ti-app-window"></i> Live Frontend Bootstrapping</h4>
             </div>
-            <div class="scase-card" onclick="matchScenario('codex')">
+            <div class="scase-card" onclick="matchScenario('sc3')">
               <div class="scase-icon codex-icon"></div>
-              <h4><i class="ti ti-cloud-cog"></i> Legacy Refactoring & CI Pipeline</h4>
+              <h4><i class="ti ti-brand-python"></i> API Version Migration</h4>
             </div>
-            <div class="scase-card" onclick="matchScenario('openclaw')">
+            <div class="scase-card" onclick="matchScenario('sc4')">
               <div class="scase-icon openclaw-icon"></div>
-              <h4><i class="ti ti-activity-heartbeat"></i> Persistent Web Server Monitoring</h4>
+              <h4><i class="ti ti-shield-lock"></i> Background Log Scraping</h4>
+            </div>
+            <div class="scase-card" onclick="matchScenario('sc5')">
+              <div class="scase-icon cowork-icon"></div>
+              <h4><i class="ti ti-calendar-stats"></i> Enterprise PMO Alignment</h4>
+            </div>
+            <div class="scase-card" onclick="matchScenario('sc6')">
+              <div class="scase-icon openclaw-icon"></div>
+              <h4><i class="ti ti-home-bolt"></i> Local IoT Orchestration</h4>
             </div>
           </div>
 
           <div class="scenario-result glass-card" id="result-pane">
             <h3 id="res-title">Select a scenario</h3>
-            <p id="res-desc">Choose a card on the left to see which platform natively supports this use case and see an
-              explanation.</p>
-            <div class="res-badge" id="res-badge" style="display: none;"></div>
+            <p id="res-desc" style="margin-bottom: 1.5rem;">Choose a deployment case from the grid to instantly see the optimal AI architectural recommendation, workflow mapping, and inherent security risks.</p>
+            
+            <div id="res-dynamic-content" style="display: none; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div class="res-badge-wrap" style="margin-bottom: 1.5rem;">
+                    <span class="badge" id="res-badge"></span>
+                </div>
+                
+                <div class="workflow-steps">
+                    <h4><i class="ti ti-route"></i> Suggested Workflow</h4>
+                    <ul id="res-steps" class="step-list">
+                    </ul>
+                </div>
+
+                <div class="security-warning glass-card" id="res-security-box">
+                    <h4><i class="ti ti-shield-alert"></i> Security Notice</h4>
+                    <p id="res-security"></p>
+                </div>
+            </div>
           </div>
         </div>
 
