@@ -4,11 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Agent Intelligence — Comparative Command Center</title>
+  <title>Agentic AI Comparative Intelligence Report</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
   <style>
     :root {
       --bg: #070810;
@@ -35,15 +34,47 @@
 
       --gold: #f59e0b;
       --red: #f87171;
-      --mono: 'Space Mono', monospace;
-      --head: 'Sora', sans-serif;
-      --body: 'IBM Plex Sans', sans-serif;
+      --mono: 'Geist Mono', monospace;
+      --head: 'Geist Mono', monospace;
+      --body: 'Geist Mono', monospace;
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+
+    /* ── ICONS ── */
+    [class^="ti-"],
+    [class*=" ti-"] {
+      vertical-align: middle;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      width: 1.25em;
+      height: 1.25em;
+    }
+
+    .icon-sm {
+      font-size: 1.1em;
+    }
+
+    .icon-md {
+      font-size: 1.45em;
+    }
+
+    .icon-lg {
+      font-size: 2.1em;
+    }
+
+    .icon-gold {
+      color: var(--gold);
+    }
+
+    .icon-dim {
+      color: var(--text-dim);
     }
 
     html {
@@ -141,8 +172,9 @@
         linear-gradient(var(--border) 1px, transparent 1px),
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
       background-size: 60px 60px;
-      opacity: 0.3;
+      opacity: 0.2;
       mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      pointer-events: none;
     }
 
     .hero-orb {
@@ -197,7 +229,7 @@
       line-height: 1.05;
       color: var(--text-bright);
       margin-bottom: 28px;
-      max-width: 820px;
+      max-width: 1100px;
       opacity: 0;
       animation: fadeUp 0.8s 0.4s forwards;
     }
@@ -208,11 +240,11 @@
     }
 
     .hero-sub {
-      font-size: 17px;
+      font-size: 20px;
       color: var(--text-dim);
-      max-width: 600px;
+      max-width: 768px;
       line-height: 1.7;
-      margin-bottom: 56px;
+      margin-bottom: 28px;
       opacity: 0;
       animation: fadeUp 0.8s 0.6s forwards;
     }
@@ -221,8 +253,39 @@
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      margin-top: 56px;
       opacity: 0;
       animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-ctas {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: flex-start;
+        gap: 80px;
+      }
+    }
+
+    .cta-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cta-label {
+      font-weight: 700;
+      font-size: 1.15em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-dim);
     }
 
     .tool-pill {
@@ -232,8 +295,9 @@
       padding: 8px 18px;
       border-radius: 100px;
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
+      text-transform: uppercase;
       border: 1px solid;
       letter-spacing: 0.05em;
       cursor: pointer;
@@ -289,6 +353,36 @@
     .pill-claw:hover {
       background: var(--claw);
       color: #000;
+    }
+
+    .wizard-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      border-radius: 100px;
+      background: linear-gradient(135deg, #a78bfa 0%, #f59e0b 100%);
+      color: #000;
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: none;
+      cursor: pointer;
+    }
+
+    .wizard-cta:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 30px rgba(167, 139, 250, 0.5);
+      filter: brightness(1.1);
+    }
+
+    .wizard-cta i {
+      font-size: 1.2em;
     }
 
     .hero-stats {
@@ -1426,7 +1520,8 @@
 
   <!-- NAV -->
   <nav>
-    <div class="nav-logo"><span>AI</span> AGENT COMPARISON // 2026</div>
+    <div class="nav-logo"><i class="ti ti-activity-heartbeat icon-gold icon-md"
+        style="margin-right: 8px;"></i><span>AI</span> AGENT COMPARISON // 2026</div>
     <div class="nav-links">
       <a href="#tools">Tools</a>
       <a href="#compare">Compare</a>
@@ -1441,51 +1536,47 @@
   <!-- ═══════════════════════════════════════════════════════════════ HERO -->
   <section id="hero">
     <div class="hero-grid"></div>
-    <div class="hero-orb orb1"></div>
     <div class="hero-orb orb2"></div>
     <div class="hero-orb orb3"></div>
 
     <div class="hero-eyebrow">// Agentic AI Comparative Intelligence Report — Early 2026</div>
-    <h1 class="hero-title">The <em>Hitchhiker's Guide</em><br>to AI Agents</h1>
+    <h1 class="hero-title">A Beginner's Guide For <em>Agentic Tools</em></h1>
     <p class="hero-sub">A comprehensive data-driven breakdown of the four products defining our use of AI. The agentic
       software era has begun. Architectural philosophies, security postures, memory systems, and the precise workflow
       each one wins.</p>
 
-    <div class="tool-pills">
-      <a href="#tools" class="tool-pill pill-cowork" data-tab="cowork">
-        <span class="pill-dot" style="background:var(--cowork)"></span>Claude Cowork
-      </a>
-      <a href="#tools" class="tool-pill pill-code" data-tab="code">
-        <span class="pill-dot" style="background:var(--code)"></span>Claude Code
-      </a>
-      <a href="#tools" class="tool-pill pill-codex" data-tab="codex">
-        <span class="pill-dot" style="background:var(--codex)"></span>OpenAI Codex
-      </a>
-      <a href="#tools" class="tool-pill pill-claw" data-tab="claw">
-        <span class="pill-dot" style="background:var(--claw)"></span>OpenClaw
-      </a>
-    </div>
 
-    <div class="hero-stats">
-      <div class="stat">
-        <div class="stat-n">4</div>
-        <div class="stat-l">Agentic Platforms Analyzed</div>
+    <div class="hero-ctas">
+      <div class="cta-column">
+        <div class="cta-label">
+          <i class="ti ti-target-arrow icon-dim icon-lg"></i>
+          Pick one to learn in detail:
+        </div>
+        <div class="tool-pills">
+          <a href="#tools" class="tool-pill pill-cowork" data-tab="cowork">
+            <i class="ti ti-briefcase icon-lg"></i>Claude Cowork
+          </a>
+          <a href="#tools" class="tool-pill pill-code" data-tab="code">
+            <i class="ti ti-terminal-2 icon-lg"></i>Claude Code
+          </a>
+          <a href="#tools" class="tool-pill pill-codex" data-tab="codex">
+            <i class="ti ti-brand-openai icon-lg"></i>OpenAI Codex
+          </a>
+          <a href="#tools" class="tool-pill pill-claw" data-tab="claw">
+            <i class="ti ti-fish-hook icon-lg"></i>OpenClaw
+          </a>
+        </div>
       </div>
-      <div class="stat">
-        <div class="stat-n">100K+</div>
-        <div class="stat-l">OpenClaw GitHub Stars</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">192K</div>
-        <div class="stat-l">Codex Context Tokens</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">92%</div>
-        <div class="stat-l">Claude Code Token Reuse Rate</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">10 Days</div>
-        <div class="stat-l">Cowork Built with Claude Code</div>
+
+      <div class="cta-column">
+        <div class="cta-label">
+          <i class="ti ti-wand icon-dim icon-lg"></i>
+          Not sure where to start?
+        </div>
+        <a href="#wizard" class="wizard-cta" onclick="startWizard()">
+          <i class="ti ti-arrow-up-right" style="font-size: 2rem;"></i>
+          <span style="font-size: 1.25rem;">Try the Decision Wizard</span>
+        </a>
       </div>
     </div>
   </section>
@@ -1547,10 +1638,14 @@
       directly from primary sources.</p>
 
     <div class="tool-tabs">
-      <button class="tab-btn active" data-tool="cowork" onclick="switchTab('cowork')">CLAUDE COWORK</button>
-      <button class="tab-btn" data-tool="code" onclick="switchTab('code')">CLAUDE CODE</button>
-      <button class="tab-btn" data-tool="codex" onclick="switchTab('codex')">OPENAI CODEX</button>
-      <button class="tab-btn" data-tool="claw" onclick="switchTab('claw')">OPENCLAW</button>
+      <button class="tab-btn active" data-tool="cowork" onclick="switchTab('cowork')"><i class="ti ti-briefcase icon-sm"
+          style="margin-right: 6px;"></i>CLAUDE COWORK</button>
+      <button class="tab-btn" data-tool="code" onclick="switchTab('code')"><i class="ti ti-terminal-2 icon-sm"
+          style="margin-right: 6px;"></i>CLAUDE CODE</button>
+      <button class="tab-btn" data-tool="codex" onclick="switchTab('codex')"><i class="ti ti-brain icon-sm"
+          style="margin-right: 6px;"></i>OPENAI CODEX</button>
+      <button class="tab-btn" data-tool="claw" onclick="switchTab('claw')"><i class="ti ti-settings-automation icon-sm"
+          style="margin-right: 6px;"></i>OPENCLAW</button>
     </div>
 
     <!-- COWORK PANEL -->
@@ -1567,7 +1662,7 @@
       </div>
 
       <div class="info-card">
-        <div class="info-card-title">Core Specifications</div>
+        <div class="info-card-title"><i class="ti ti-list-details"></i>Core Specifications</div>
         <div class="spec-list">
           <div class="spec-row"><span class="spec-key">Target Audience</span><span class="spec-val">Non-technical
               enterprise knowledge workers</span></div>
@@ -1593,7 +1688,7 @@
       </div>
 
       <div class="info-card">
-        <div class="info-card-title">Architectural Philosophy</div>
+        <div class="info-card-title"><i class="ti ti-lambda"></i>Architectural Philosophy</div>
         <div class="prose">
           <strong>Steerability-First Design:</strong> Unlike purely autonomous agents, Cowork is architected to pause
           and request human authorization before any significant, state-altering action. This mandatory governance
@@ -1610,7 +1705,7 @@
       </div>
 
       <div class="info-card">
-        <div class="info-card-title">Ideal Task Types</div>
+        <div class="info-card-title"><i class="ti ti-checkbox"></i>Ideal Task Types</div>
         <div class="feature-tags">
           <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Dense document analysis</span>
           <span class="ftag" style="border-color:var(--cowork);color:var(--cowork)">Calendar summarization</span>
@@ -1625,7 +1720,7 @@
       </div>
 
       <div class="info-card">
-        <div class="info-card-title">External Integrations</div>
+        <div class="info-card-title"><i class="ti ti-plug"></i>External Integrations</div>
         <div class="spec-list">
           <div class="spec-row"><span class="spec-key">Corporate DB Connectors</span><span
               class="spec-val good">Supported via MCP</span></div>
