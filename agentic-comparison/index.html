@@ -126,6 +126,9 @@
       font-size: 12px;
       color: var(--text-dim);
       letter-spacing: 0.08em;
+      position: relative;
+      z-index: 1002;
+      cursor: pointer;
     }
 
     .nav-logo span {
@@ -153,6 +156,70 @@
       color: var(--text-bright);
       border-color: var(--border-bright);
     }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--gold);
+      font-size: 28px;
+      padding: 8px;
+      cursor: pointer;
+      z-index: 1002;
+    }
+
+    .nav-toggle.active {
+      color: var(--text-bright);
+    }
+
+    /* ── MOBILE OVERLAY ── */
+    .nav-mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 8, 16, 0.98);
+      backdrop-filter: blur(24px);
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 100px 20px;
+      gap: 32px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(-20px);
+      overflow-y: auto;
+    }
+
+    .nav-mobile-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .nav-mobile-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-mobile-links a {
+      font-family: var(--mono);
+      font-size: 20px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-mobile-links a:hover {
+      color: var(--text-bright);
+    }
+
+
 
     /* ── HERO ── */
     #hero {
@@ -1464,10 +1531,22 @@
       display: none;
     }
 
-    /* Mobile */
-    @media (max-width: 900px) {
+    /* Mobile / Tablet */
+    @media (max-width: 1024px) {
       nav {
         padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .nav-logo {
+        font-size: 10px;
       }
 
       section {
@@ -1508,10 +1587,6 @@
         flex-wrap: wrap;
         gap: 24px;
       }
-
-      .nav-links {
-        display: none;
-      }
     }
   </style>
 </head>
@@ -1520,7 +1595,7 @@
 
   <!-- NAV -->
   <nav>
-    <div class="nav-logo"><i class="ti ti-activity-heartbeat icon-gold icon-md"
+    <div class="nav-logo" onclick="if(window.menuOpen) toggleMobileMenu()"><i class="ti ti-activity-heartbeat icon-gold icon-md"
         style="margin-right: 8px;"></i><span>AI</span> AGENT COMPARISON // 2026</div>
     <div class="nav-links">
       <a href="#tools">Tools</a>
@@ -1531,7 +1606,22 @@
       <a href="#economics">Pricing</a>
       <a href="#wizard">Wizard</a>
     </div>
+    <button class="nav-toggle" id="nav-toggle" onclick="toggleMobileMenu()">
+      <i class="ti ti-menu-2"></i>
+    </button>
   </nav>
+
+  <div class="nav-mobile-overlay" id="nav-mobile-overlay">
+    <div class="nav-mobile-links">
+      <a href="#tools" onclick="toggleMobileMenu()">Tools</a>
+      <a href="#compare" onclick="toggleMobileMenu()">Compare</a>
+      <a href="#memory" onclick="toggleMobileMenu()">Memory</a>
+      <a href="#scenarios" onclick="toggleMobileMenu()">Scenarios</a>
+      <a href="#security" onclick="toggleMobileMenu()">Security</a>
+      <a href="#economics" onclick="toggleMobileMenu()">Pricing</a>
+      <a href="#wizard" onclick="toggleMobileMenu()">Wizard</a>
+    </div>
+  </div>
 
   <!-- ═══════════════════════════════════════════════════════════════ HERO -->
   <section id="hero">
@@ -3345,6 +3435,19 @@
     window.addEventListener('load', () => {
       drawRadar();
       startWizard();
+
+      // Mobile Menu Logic
+      const overlay = document.getElementById('nav-mobile-overlay');
+      const toggle = document.getElementById('nav-toggle');
+      let menuOpen = false;
+
+      window.toggleMobileMenu = () => {
+        window.menuOpen = !window.menuOpen;
+        overlay.classList.toggle('active');
+        toggle.classList.toggle('active');
+        toggle.innerHTML = window.menuOpen ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>';
+        document.body.style.overflow = window.menuOpen ? 'hidden' : '';
+      }
 
       // Animate memory bars on scroll
       const observer = new IntersectionObserver((entries) => {
